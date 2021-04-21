@@ -1,0 +1,133 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{%static '/CSS/Home.css' %}">
+    <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+    <title>Home</title>
+</head>
+<body>
+    <div class="box-area">
+        <header>
+            {% if user.is_authenticated %}
+            <div class="wrapper">
+                <div class="navbar">
+                   
+                    <div class="right">
+                        <ul>
+                          <li>
+                            <a href="#">
+
+                              <p>{{user.Name}}<br> <span>User</span></p><img src="https://i.imgur.com/kDLvuKf.png" alt="profile_pic" width="40">
+                            </a>
+                            {% else %}
+                            <div class="wrapper">
+                                <div class="navbar">
+                                    <div class="right">
+                                        <ul>
+                                          <li>
+                                            <a href="#">
+                                              <p>Your Name<br> <span>Please login</span></p><img src="https://i.imgur.com/kDLvuKf.png" alt="Admin" width="40">
+                                            </a>
+                                            {% endif %}
+                          <div class="dropdown">
+                                <ul>
+                                  <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+                                  <li><a href="#"><i class="fas fa-sliders-h"></i> Settings</a></li>
+                                  <li><a href="#"><i class="fas fa-sign-out-alt"></i> Signout</a></li>
+                              </ul>
+                            </div>
+                            
+                          </li>
+                      </ul>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="wrapper">
+                <div class="logo">
+                    <a href="#">Bistro </a>
+                </div>
+                <nav>
+
+               {% if user.is_authenticated %}
+                    <a href="#">Home</a>
+                    <a href="#">About Us</a>
+                    <a href="#">Contuct Us</a>
+                    <form action = 'account/logout' method = "post">
+                    {%csrf_token%}
+                    <input type= "submit" value  = "Log Out" class = "dismiss-btn" />
+                    </form>
+                  {% else %}
+                    <a href="#">Home</a>
+                    <a href="account/register">Register</a>
+                    <a href="account/login">login</a>
+                </nav>
+            </div>
+                {% endif %}
+                </header>
+            <div class="banner-area">
+                <h2>Welcom to our Restaurant</h2>
+                <p>We are delight to serve fresh and testy food</p>
+        </div>
+        <div class="content-area">
+            <div class="quotes">
+                <div class="card">
+                    <div class="box box1">
+                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quia recusandae ipsum commodi soluta at, dolores quasi mollitia explicabo inventore dolor officia, consequatur voluptas, neque ratione deserunt sit esse non labore.</p>
+                        <div class="container">
+                            <button type="submit" class="submit-btn">Order Now</button>
+                        </div>
+                        <h2>Nikhil Gupta</h2>
+                    </div>
+                    <div class="bg"></div>
+                    </div>
+                    <div class="card">
+                        <div class="box box2">
+                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quia recusandae ipsum commodi soluta at, dolores quasi mollitia explicabo inventore dolor officia, consequatur voluptas, neque ratione deserunt sit esse non labore.</p>
+                            <div class="continer_1">
+                                <button type="submit" class="submit-btn">Book Table</button>
+                            </div>
+                            <h2>Ritik Gupta</h2>
+                        </div>
+                        <div class="bg"></div>
+                </div>
+        </div>
+    </div>
+
+    <script>
+   document.querySelector(".right ul li").addEventListener("click", function(){
+  this.classList.toggle("active");
+});
+
+</script>
+</body>
+</html>
+<!-- 
+<div class="wrapper">
+    <h2>Content Area</h2>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur consectetur voluptate, blanditiis corporis eos cum sequi deserunt commodi iste, et dolorum harum id iusto molestiae iure nobis magni perferendis aut. Doloribus voluptatem architecto officia.</p>
+
+</div> -->
+
+
+            {% comment %} <div class = "main">
+            <div class="right">
+            <ul>
+              <li>
+                <a href="#" id = "a">
+                  <p>Coding Market<br> <span>Admin</span></p>
+                  <img src="https://i.imgur.com/kDLvuKf.png" alt="Admin" width="40">
+                  <i class="fas fa-angle-down"></i>
+                </a>
+                <div class="dropdown">
+                    <ul>
+                      <li><a  class = "a" href="#"><i class="fas fa-user"></i> Profile</a></li>
+                      <li><a href="#" class = "a"><i class="fas fa-sliders-h"></i> Settings</a></li>
+                      <li><a class = "a" href="#"><i class="fas fa-sign-out-alt"></i> Signout</a></li>
+                  </ul>
+                </div>  
+            </div> {% endcomment %}
