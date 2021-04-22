@@ -15,10 +15,10 @@ def Register(request):
         Name = request.POST['name']
         email = request.POST['email']
         password = request.POST['password']
-        conform_password = request.POST['conform_password']
+        confirm_password = request.POST['confirm_password']
         phone_number = request.POST['phone_number']
         address  = request.POST['address']
-        profile_photo = request.POST['profile_pic']
+        #profile_photo = request.POST['profile_pic']
         
         if(password==conform_password):
             if(User.objects.filter(email=email).exists()):
@@ -32,7 +32,7 @@ def Register(request):
                 user.save()
                 return redirect('/')
         else:
-            messages.info(request,'Password not matching....')
+            messages.info(request,'Password Does Not Match')
             return redirect('/')
     else:
         return render(request,'Login_Registration.html')
