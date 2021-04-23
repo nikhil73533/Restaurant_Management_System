@@ -8,6 +8,34 @@ from django.shortcuts import redirect, render
 def Home(request):
     return render(request,'Home.html')
 
+#profile page Backand Coding
+def Profile(request):
+    context = {}
+    data = User.objects.get(id = request.user.id)
+    context["data"] = data
+    if(request.method == 'POST'):
+        Name = request.POST['name']
+        Email = request.POST['email']
+        Address = request.POST['address']
+        phone = request.POST['phone']
+        user = User.objects.get(id = request.user.id)
+        user.Name = Name
+        user.email = Email
+        user.Address = Address
+        user.phone = phone
+        user.save()
+
+        if("profile" in request.FILES):
+            img = request.FILE['profile']
+            user.profile_pic = img
+            user.save()
+        context["status"] = "Changes Saved Successfully"
+        return render(request,'profile_page.html',context)
+
+
+    else:
+        return redirect('profile')
+
 #Registration and Login form 
 User = get_user_model()
 def Register(request):
@@ -18,9 +46,8 @@ def Register(request):
         confirm_password = request.POST['confirm_password']
         phone_number = request.POST['phone_number']
         address  = request.POST['address']
-        #profile_photo = request.POST['profile_pic']
         
-        if(password==conform_password):
+        if(password==confirm_password):
             if(User.objects.filter(email=email).exists()):
                 messages.info(request,'Email Taken')
                 return render(request,'Login_Registration.html')
@@ -30,7 +57,7 @@ def Register(request):
             else:
                 user  = User.objects.create_user(Name = Name,email = email,password = password,phone = phone_number,Address = address)
                 user.save()
-                return redirect('/')
+                return render(request,'Login_Registration.html')
         else:
             messages.info(request,'Password Does Not Match')
             return redirect('/')
@@ -45,7 +72,7 @@ def Login(request):
         user = auth.authenticate(request, email=email, password=password)
         if(user is not None):
             auth.login(request,user)
-            return render(request,'Home.html',{'user':user})
+            return redirect('/',user= 'user')
         else:
             return render(request,'Login_Registration.html')
     else:

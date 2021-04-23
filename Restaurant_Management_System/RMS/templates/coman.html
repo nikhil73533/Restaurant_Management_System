@@ -1,6 +1,4 @@
-
 {%load static%}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,12 +29,7 @@
 </header>
 <!-- Header area end -->
 <!-- main section area start -->
-    <div class="main">
-        <button><a href="#">Order Now</a></button>
-    </div>
-    <div class="main_2">
-        <button><a href="#">Book Table</a></button>
-    </div>
+  
 <!-- main section area end -->
 <!-- slider area start -->
 
@@ -65,6 +58,6 @@
     {%endif%}
 </div>
 <!-- slider area end -->
-<div class="content"></div>
+{% block body %}     {% endblock %}
 </body>
 </html>

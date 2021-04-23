@@ -1,0 +1,64 @@
+{% extends 'coman.html' %}
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="{%static 'css/profile_page.css'%}">
+</head>
+<body>
+      
+      {% block body %} 
+    <div class="main_2">
+      <img src="../static/about.jpg" alt="" height="100px" width="150px" enctype = "multipart/form-data">
+        <form action="profile" method = "POST">{%csrf_token%}
+          <input type="text" value = {{user.Name}} placeholder="name" name = "name">
+          
+          <input type="text" value = {{user.email}} placeholder="email" name="email">
+          
+          <input type="text" value = {{user.phone}} placeholder="phone" name = "phone">
+        
+          <input type="text" value = {{user.Address}} placeholder="Address" name = "address">
+          
+          <input type="file" placeholder="profile picture"> 
+
+          <input type="submit" name = "profile" value = "submit">
+        </form>
+        {%if status%}
+        <div class="alert alert-primary">{{status}}</div>
+        {%endif%}
+    </div>
+      {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </script>
+</body>
+</html>
+
+ 

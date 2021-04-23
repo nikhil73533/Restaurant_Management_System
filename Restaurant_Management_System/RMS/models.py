@@ -54,7 +54,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     Name = models.CharField(verbose_name = "Name",max_length = 50)
     email = models.EmailField(verbose_name = "email address",max_length = 60,unique = True,blank = True)
     Address = models.CharField(verbose_name = "Address",max_length = 200)
-    profile_pic = models.ImageField(upload_to='profile_pic/', height_field=None,null = True, blank = True, width_field=None, max_length=100)
+    profile_pic = models.ImageField(upload_to='profile_pic /', blank = True, null = True)
     phone = models.CharField(max_length = 20,verbose_name = "phone number")
     last_login = models.DateTimeField(verbose_name = "last login",auto_now = True)
     is_admin = models.BooleanField(default = False)
