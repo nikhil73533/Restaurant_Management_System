@@ -1,4 +1,3 @@
-{% extends 'coman.html' %}
 {%load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -8,57 +7,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
     <link rel="stylesheet" href="{%static 'css/profile_page.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
-      
-      {% block body %} 
-    <div class="main_2">
-      <img src="../static/about.jpg" alt="" height="100px" width="150px" enctype = "multipart/form-data">
-        <form action="profile" method = "POST">{%csrf_token%}
-          <input type="text" value = {{user.Name}} placeholder="name" name = "name">
-          
-          <input type="text" value = {{user.email}} placeholder="email" name="email">
-          
-          <input type="text" value = {{user.phone}} placeholder="phone" name = "phone">
-        
-          <input type="text" value = {{user.Address}} placeholder="Address" name = "address">
-          
-          <input type="file" placeholder="profile picture"> 
-
-          <input type="submit" name = "profile" value = "submit">
-        </form>
-        {%if status%}
-        <div class="alert alert-primary">{{status}}</div>
-        {%endif%}
+  <input type="checkbox" name = "" id = "check" value = "">
+<!-- Header area start -->
+<header>
+    <label for="check">
+        <i class="fas fa-bars" id = "sidebar_btn"></i>
+    </label>
+    <div class="left_area">
+        <h3>Kalash <span>Da Dhaba</span></h3>
     </div>
-      {% endblock %}
+    {%if user.is_authenticated %}
+    <div class="right-area">
+        <a href="account/logout" class="logout_btn">Logout</a>
+    </div>
+    {%endif%}
+</header>
+<!-- Header area end -->
+  <!-- main section area start -->
+  <div class="main_2">
+    <img src="/media/{{user.profile_pic}}" height="100px" width="75px" alt="">
+    {%if status%}
+    <div class="alert">{{status}}</div>
+       {%endif%}
+   
+   
+       <form action="profile" method = "POST" enctype="multipart/form-data" >{%csrf_token%}
 
+        <div class="information">
+          <h1>Edit profile</h1>
+        </div>
+         <input type="text" value = {{user.Name}} placeholder="Name" name = "name">
+         
+         <input type="text" value = {{user.email}} placeholder="Email" name="email">
+         
+         <input type="text" value = {{user.phone}} placeholder="Phone Number" name = "phone">
+       
+         <input type="text" value = {{user.Address}} placeholder="Address" name = "address">
+         
+         <div class="col-md-6">
+           <input type="file" class="form-control" name="profile">
+       </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </script>
+         <input type="submit"  id = "btn" value = "submit">
+       </form>
+      </div>
+       
+  <!-- main section area end -->
+  <!-- slider area start -->
+  
+  <div class="sidebar">
+      <center>
+        {%if user.is_authenticated%}
+        {%if user.profile_pic %} 
+        <img src="/media/{{user.profile_pic}}" height="100px" width="75px" alt="">
+        {%else%}
+       <img src="../static/user.png" alt="profile pic" class = "profile_img">
+         {%endif%}
+           <!-- <img src="../static/user.png" alt="profile pic" class = "profile_img"> -->
+          <h4>{{user.Name}}</h4>
+          <h4></h4>
+          {%else%}
+           <img src="../static/bg1.jpg" alt="profile_pic" class = "profile_img">
+          <h4>user profile</h4>
+          {%endif%}
+      </center>
+      {%if user.is_authenticated %}
+        <a href="/"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="#"><i class="fas fa-address-card"></i><span>About</span></a>
+      <a href="#"><i class="fas fa-id-card-alt"></i><span>Contact</span></a>
+      {%else%}
+     <a href="#"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="account/register"><i class="fas fa-registered"></i><span>Register</span></a>
+      <a href="account/login"><i class="fas fa-sign-in-alt"></i><span>Login</span></a>
+      {%endif%}
+  </div>
+  <!-- slider area end -->
+  <div class="content"></div>
 </body>
 </html>
 
- 
+
+

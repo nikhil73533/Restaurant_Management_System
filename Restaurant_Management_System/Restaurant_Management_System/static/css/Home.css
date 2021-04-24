@@ -14,23 +14,19 @@ body{
     left: 63%;
     position: absolute;
 }
-button{
-    padding: 10px 20px;
-    border-radius: 9%;
-    background: transparent;
-    border: 2px solid gray;
-}
 button a{
-    text-decoration: none;
-    font-size: 30px;
-    color: #0090BB;
-    transition: 0.5s;
-    transition-property: a;
-    
+    position: fixed;
+    display:inline-block ;
 }
 button:hover{
     background: white;
     color: black;
+    padding: 12px 36px;
+    margin: 10px 0px;
+
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
 }
 button a:hover{
     color: black;

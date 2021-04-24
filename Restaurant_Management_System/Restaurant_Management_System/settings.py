@@ -124,11 +124,19 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
 BASE_DIR / 'Restaurant_Management_System/static'
 ]
-STATIC_ROOT   = BASE_DIR,'static'
+STATIC_ROOT   = BASE_DIR / 'static'
 MEDIA_URL = '/media/'
-MEDIA_ROOT =  BASE_DIR, 'media'
+MEDIA_ROOT =  BASE_DIR / 'media'
 
 
+# SMTP configration
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+Email_host = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'ng7873301@gmail.com'
+EMAIL_HOST_PASSWOR= 'ashok1370'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 

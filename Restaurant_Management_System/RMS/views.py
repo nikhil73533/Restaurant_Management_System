@@ -13,7 +13,9 @@ def Profile(request):
     context = {}
     data = User.objects.get(id = request.user.id)
     context["data"] = data
+    print("ok0")
     if(request.method == 'POST'):
+        print("ok3")
         Name = request.POST['name']
         Email = request.POST['email']
         Address = request.POST['address']
@@ -26,15 +28,17 @@ def Profile(request):
         user.save()
 
         if("profile" in request.FILES):
-            img = request.FILE['profile']
+            img = request.FILES['profile']
+            print(img)
             user.profile_pic = img
             user.save()
+            print("ok1")
         context["status"] = "Changes Saved Successfully"
         return render(request,'profile_page.html',context)
 
 
     else:
-        return redirect('profile')
+       return render(request,'profile_page.html')
 
 #Registration and Login form 
 User = get_user_model()
