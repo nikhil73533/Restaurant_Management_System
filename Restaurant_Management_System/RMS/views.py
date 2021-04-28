@@ -7,6 +7,10 @@ from django.shortcuts import redirect, render
 # Home page Backand Coding
 def Home(request):
     return render(request,'Home.html')
+ 
+# Reset Password functions
+def reset_password(request):
+    return render(request , 'user/Reset_Password.html')
 
 #profile page Backand Coding
 def Profile(request):
@@ -35,8 +39,7 @@ def Profile(request):
             print("ok1")
         context["status"] = "Changes Saved Successfully"
         return render(request,'profile_page.html',context)
-
-
+        
     else:
        return render(request,'profile_page.html')
 

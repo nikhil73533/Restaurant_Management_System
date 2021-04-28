@@ -21,7 +21,7 @@
     </div>
     {%if user.is_authenticated %}
     <div class="right-area">
-        <a href="account/logout" class="logout_btn">Logout</a>
+        <a href="{%url 'Logout'%}" class="logout_btn">Logout</a>
     </div>
     {%endif%}
 </header>

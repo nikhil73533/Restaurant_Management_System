@@ -24,8 +24,14 @@
              {%csrf_token%}
                 <input type="email" class="input-field" placeholder="Email" name = "email" required>
                 <input type="password" class="input-field" placeholder="Enter Password" name = "password" required>
-                  <input type="checkbox" class="check-box"><span>Remember Password</span>
+                  <div class="check-box">
+                  </div>
                 <input type = "submit" value = "Login" class="submit-btn"/>
+                <div class = "check-box"></div>
+                <div class="forget_password">
+                
+                    <a href = "{%url 'reset_password'%}">forget password </a>
+                </div>
             </form>
             <form action="register" class="input-group" id="register" method = "POST">{%csrf_token%}
           

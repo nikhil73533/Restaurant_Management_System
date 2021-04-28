@@ -12,6 +12,11 @@
     position: absolute;
 }
 
+.forget-password a{
+    text-decoration: none;
+    color: gray;
+}
+
 .form-box{
     width: 380px;
     height: 572px;
