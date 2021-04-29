@@ -14,15 +14,23 @@ body{
     left: 63%;
     position: absolute;
 }
-button{
-    
-}
 button a{
     position: fixed;
     display:inline-block ;
-    text-decoration: none;
 }
+button:hover{
+    background: white;
+    color: black;
+    padding: 12px 36px;
+    margin: 10px 0px;
 
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+button a:hover{
+    color: black;
+}
 header{
     position: fixed;
     background:#22242A;
