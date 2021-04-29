@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils import timezone
 # Create your models here.
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
@@ -10,6 +10,7 @@ class Food(models.Model):
     Food_Avg_Rating = models.FloatField()
     Food_Type = models.CharField(max_length = 100)
     Description = models.CharField(max_length  = 5000)
+    profile_pic = models.ImageField(upload_to='Food/', blank = True, null = True)
 
 
 class MyUserManager(BaseUserManager):
@@ -76,3 +77,12 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         return True
 
 
+# order model
+class orders(models.Model):
+    user_id = models.ForeignKey(MyUser,default=None,on_delete = models.CASCADE)
+    food_id = models.ForeignKey(Food,default=None, on_delete = models.CASCADE)
+    date_time = models.DateTimeField('date published')
+    order_address = models.CharField(max_length=5000)
+    quantity = models.IntegerField()
+    deliver_status = models.BooleanField(default=False)
+    
