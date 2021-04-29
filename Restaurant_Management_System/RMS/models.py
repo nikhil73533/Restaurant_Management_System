@@ -10,8 +10,9 @@ class Food(models.Model):
     Food_Avg_Rating = models.FloatField()
     Food_Type = models.CharField(max_length = 100)
     Description = models.CharField(max_length  = 5000)
-    profile_pic = models.ImageField(upload_to='Food/', blank = True, null = True)
-
+    food_pic = models.ImageField(upload_to='Food/', blank = True, null = True)
+    def __str__(self):
+        return self.Food_Name
 
 class MyUserManager(BaseUserManager):
     def profile_pic(self,profile_pic):

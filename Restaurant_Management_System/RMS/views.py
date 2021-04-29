@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
-
+from .models import Food
 
 # Home page Backand Coding
 def Home(request):
@@ -91,3 +91,6 @@ def Logout(request):
     
 
 # Food Manue
+def FoodMenu(request):
+    food = Food.objects.all()
+    return render(request,'Food_menu.html',{'food':food})

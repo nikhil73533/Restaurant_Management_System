@@ -1,72 +1,54 @@
+{%load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../RTMS/static/css/Food_menu.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{%static 'css/Food_menu.css'%}">
     <title>Food Menu</title>
 </head>
 <body>
-    <header>
-        <div class="wrapper">
-            <div class="logo">
-                <a href="#">Bistro </a>
-            </div>
-            <nav>
-                <a href="#">Home</a>
-                <a href="#">About</a>
-                <a href="#">Contact Us</a>
-            </nav>
+    <!-- Header area -->
+<div class="menu">
+    <div class="heading">
+        <h1>KALASH DA DHABA</h1>
+        <h3>&mdash; MENU &mdash;</h3>
+         
+    </div>
+    <!-- Header area finish -->
+    <!-- Menu area start -->
+    {%for food_items in food%}
+    <div class="food-items">
+        <img src="/media/{{food_items.food_pic}}" alt="food_pic">
+    <div class="details">
+        <div class="details-sub">
+            <h5><a href="#">{{food_items.Food_Name}}</a></h5>
+            <h5 class="price">&#8377; {{food_items.Food_Price}}</h5>
         </div>
-    </header>
-    <section>
-        <div class="slider">
-            <figure>
-                <div class="slide">
-                    <img src="" alt="">
-                </div>
-                <div class="slide">
-                    <img src="../../RTMS/static/Slide_img/bread-barrel.jpg" alt="">
-                </div>
-                <div class="slide">
-                    <img src="../../RTMS/static/Slide_img/caesar.jpg" alt="">
-                </div>
-                <div class="slide">
-                    <img src="../../RTMS/static/Slide_img/cake.jpg" alt="">
-                </div>
-                <div class="slide">
-                    <img src="../../RTMS/static/Slide_img/greek-salad.jpg" alt="">
-                </div>
-                <div class="slide">
-                    <img src="../../RTMS/static/Slide_img/spinach-salad.jpg" alt="">
-                </div>
-                
-    
-                </figure>
-            </div>
-    </section>
-<!-- Making Bar -->
-<div class="main_1">
-    <div class="icon-bar">
-        <h3 class = "photo">Photo</h3>
-        <h3 class = "Description">Description</h3>
-        <h3 class = "filter">Filter</h3>
-        <h3 class = "btn">Buttons</h3>
+        <p>{{food_items.Description}}</p>
+        <button>Add To Cart</button>
     </div>
     </div>
-    <div class="main_2">
-        <div class="icon-bar2">
-            <h3 class = "photo"></h3>
-            <h3 class = "Description"></h3>
-            <h3 class = "filter">
-            </h3>
-            <h3 class = "btn"><button type="submit" >Add FoodItems</button>
-                <button type="submit" >Add Types</button>
-                <button type="submit" >Add photo</button></h3>
-        </div>
-        </div>
-   
+    {%endfor%}
+</div>
+<!-- nav area start -->
+<div class="nav">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Orders</a></li>
+        <li>Filters
+            <ul class  = "dropdown">
+                <li><input type="checkbox"> Indian </li>
+                <li> <input type="checkbox"> Chines</li>
+                <li> <input type="checkbox"> Maxicu</li>
+                <li> <input type="checkbox"> Ittliean</li>
+            </ul>
+        </li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+</div>
+<!-- nav area end -->
 </body>
 </html>
