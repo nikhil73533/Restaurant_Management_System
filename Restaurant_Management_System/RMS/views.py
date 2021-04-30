@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
 from .models import Food
+from django.contrib.auth.decorators import login_required
 
 # Home page Backand Coding
 def Home(request):
@@ -13,6 +14,7 @@ def reset_password(request):
     return render(request , 'user/Reset_Password.html')
 
 #profile page Backand Coding
+@login_required(login_url='/') 
 def Profile(request):
     context = {}
     data = User.objects.get(id = request.user.id)
@@ -94,3 +96,15 @@ def Logout(request):
 def FoodMenu(request):
     food = Food.objects.all()
     return render(request,'Food_menu.html',{'food':food})
+
+# Add To Cart
+def Cart(request):
+    return render(request,'Cart.html')
+
+#Order Page
+@login_required(login_url='/') 
+def FoodOrder(request,food_id):
+    food = Food.objects.get(id = food_id)
+    print(food.Food_Name)
+    print(food)
+    return render(request,'Food_Order.html',{"food":food})

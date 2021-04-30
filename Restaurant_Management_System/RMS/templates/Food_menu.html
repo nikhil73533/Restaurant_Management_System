@@ -23,7 +23,13 @@
         <img src="/media/{{food_items.food_pic}}" alt="food_pic">
     <div class="details">
         <div class="details-sub">
-            <h5><a href="#">{{food_items.Food_Name}}</a></h5>
+            <h5>
+            {% comment %} <a href="{% url 'FoodOrder' %}">{{food_items.Food_Name}}</a> {% endcomment %}
+            <form action="food_order/{{food_items.id}}/" method = "POST">
+            {%csrf_token%}
+                <input type="submit" value = {{food_items.Food_Name}}>
+            </form>
+            </h5>
             <h5 class="price">&#8377; {{food_items.Food_Price}}</h5>
         </div>
         <p>{{food_items.Description}}</p>
@@ -42,7 +48,7 @@
             <ul class  = "dropdown">
                 <li><input type="checkbox"> Indian </li>
                 <li> <input type="checkbox"> Chines</li>
-                <li> <input type="checkbox"> Maxicu</li>
+                <li> <input type="checkbox"> Maxican</li>
                 <li> <input type="checkbox"> Ittliean</li>
             </ul>
         </li>

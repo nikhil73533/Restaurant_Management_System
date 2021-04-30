@@ -1,0 +1,163 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{%static 'css/Food_Order.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <title>Food Order</title>
+</head>
+<body>
+    <div class = "card-wrapper">
+        <div class = "card">
+          <!-- card left -->
+          <div class = "product-imgs">
+            <div class = "img-display">
+              <div class = "img-showcase">
+                <img src = "/media/{{food.food_pic}}" alt = "Food image">
+                <img src = "/media/{{food.food_pic}}" alt = "Food image">
+                <img src = "/media/{{food.food_pic}}" alt = "Food image">
+                <img src = "/media/{{food.food_pic}}" alt = "Food image">
+              </div>
+            </div>
+            <div class = "img-select">
+              <!-- <div class = "img-item">
+                <a href = "#" data-id = "1">
+                  <img src = "../static/bg1.jpg" alt = "Food image">
+                </a>
+              </div> -->
+              <!-- <div class = "img-item">
+                <a href = "#" data-id = "2">
+                  <img src = "../static/bg1.jpg" alt = "Food image">
+                </a>
+              </div> -->
+              <!-- <div class = "img-item">
+                <a href = "#" data-id = "3">
+                  <img src = "../static/bg1.jpg" alt = "Food image">
+                </a>
+              </div> -->
+              <!-- <div class = "img-item">
+                <a href = "#" data-id = "4">
+                  <img src = "../static/bg1.jpg" alt = "Food image">
+                </a>
+              </div> -->
+            </div>
+          </div>
+          <!-- card right -->
+          <div class = "product-content">
+            <h2 class = "product-title">{{food.Food_Name}}</h2>
+            <div class = "product-rating">
+              <i class = "fas fa-star"></i>
+              <i class = "fas fa-star"></i>
+              <i class = "fas fa-star"></i>
+              <i class = "fas fa-star"></i>
+              <i class = "fas fa-star-half-alt"></i>
+              <span>4.7(21)</span>
+            </div>
+  
+            <div class = "product-price">
+              <!-- <p class = "last-price">Old Price: <span>$257.00</span></p> -->
+              <p class = "new-price">Price: <span>&#8377; {{food.Food_Price}} </span></p>
+            </div>
+  
+            <div class = "product-detail">
+              <h2>about this Food: </h2>
+              <p>{{food.Description}}</p>
+              <ul>
+                <li>Category: <span>{{food.Food_Type}}</span></li>
+                <li>Shipping Area: <span>All over the world</span></li>
+                <li>Shipping Fee: <span>Free</span></li>
+              </ul>
+            </div>
+  
+            <div class = "purchase-info">
+              <button type = "button" class = "btn">Order Now</button>
+            </div>
+  
+          </div>
+        </div>
+      </div>
+  
+      <!-- nav area start -->
+<div class="nav">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Orders</a></li>
+        <li><a href="{%url 'FoodMenu'%}">Menu</a>
+        </li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+</div>
+<!-- nav area end -->
+<!-- feedback form -->
+<div class="container">
+    <div class="post">
+      <div class="text">
+Thanks for rating us!</div>
+<div class="edit">
+EDIT</div>
+</div>
+<div class="star-widget">
+      <input type="radio" name="rate" id="rate-5">
+      <label for="rate-5" class="fas fa-star"></label>
+      <input type="radio" name="rate" id="rate-4">
+      <label for="rate-4" class="fas fa-star"></label>
+      <input type="radio" name="rate" id="rate-3">
+      <label for="rate-3" class="fas fa-star"></label>
+      <input type="radio" name="rate" id="rate-2">
+      <label for="rate-2" class="fas fa-star"></label>
+      <input type="radio" name="rate" id="rate-1">
+      <label for="rate-1" class="fas fa-star"></label>
+      <form action="#">
+        <header></header>
+        <div class="textarea">
+          <textarea cols="" placeholder="Describe your experience.."></textarea> 
+ <br />
+<div class="btn">
+<button type="submit">Post</button>
+        </div>
+        </div>
+<!-- feedback form end -->
+
+      <script>
+          const imgs = document.querySelectorAll('.img-select a');
+const imgBtns = [...imgs];
+let imgId = 1;
+
+imgBtns.forEach((imgItem) => {
+    imgItem.addEventListener('click', (event) => {
+        event.preventDefault();
+        imgId = imgItem.dataset.id;
+        slideImage();
+    });
+});
+
+function slideImage(){
+    const displayWidth = document.querySelector('.img-showcase img:first-child').clientWidth;
+
+    document.querySelector('.img-showcase').style.transform = `translateX(${- (imgId - 1) * displayWidth}px)`;
+}
+
+window.addEventListener('resize', slideImage);
+
+// FeedBack form
+const btn = document.querySelector("button");
+    const post = document.querySelector(".post");
+    const widget = document.querySelector(".star-widget");
+    const editBtn = document.querySelector(".edit");
+    btn.onclick = ()=>{
+      widget.style.display = "none";
+      post.style.display = "block";
+      editBtn.onclick = ()=>{
+        widget.style.display = "block";
+        post.style.display = "none";
+      }
+      return false;
+    }
+      </script>
+</body>
+</html>

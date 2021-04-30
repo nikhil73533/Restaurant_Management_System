@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-# Create your models here.
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
 # Create your models here.
@@ -14,6 +14,7 @@ class Food(models.Model):
     def __str__(self):
         return self.Food_Name
 
+# Creating custom  user models here.
 class MyUserManager(BaseUserManager):
     def profile_pic(self,profile_pic):
         user = self.model(
@@ -86,4 +87,7 @@ class orders(models.Model):
     order_address = models.CharField(max_length=5000)
     quantity = models.IntegerField()
     deliver_status = models.BooleanField(default=False)
+
+# FeedBack Model
+
     
