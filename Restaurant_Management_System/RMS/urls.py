@@ -11,7 +11,9 @@ urlpatterns = [
     path('profile',views.Profile,name = "Profile"),
     path('menu',views.FoodMenu,name = "FoodMenu"),
     path('cart', views.Cart,name = "Cart"),
+    path('feedback/<int:food_id>/', views.FeedBack,name = "FeedBack"),
     path('food_order/<int:food_id>/', views.FoodOrder,name = "FoodOrder"),
+    path('payment', views.Payment,name = "Payment"),
      #Password Reset Urls
 
     path('reset_password/',PasswordResetView.as_view(template_name = "user/Password_email.html"),name = 'reset_password'),

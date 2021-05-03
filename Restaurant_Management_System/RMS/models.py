@@ -1,16 +1,16 @@
 from django.db import models
 from django.utils import timezone
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
 # Create your models here.
 class Food(models.Model):
     Food_Name = models.CharField(max_length = 100)
     Food_Price = models.IntegerField()
-    Food_Avg_Rating = models.FloatField()
+    Food_Avg_Rating = models.FloatField(null = True)
     Food_Type = models.CharField(max_length = 100)
     Description = models.CharField(max_length  = 5000)
     food_pic = models.ImageField(upload_to='Food/', blank = True, null = True)
+    users = models.IntegerField(null = True)
     def __str__(self):
         return self.Food_Name
 
@@ -89,5 +89,13 @@ class orders(models.Model):
     deliver_status = models.BooleanField(default=False)
 
 # FeedBack Model
+class Review(models.Model):
+    user = models.ForeignKey(MyUser,default=None,on_delete = models.DO_NOTHING)
+    food = models.ForeignKey(Food,default=None, on_delete = models.DO_NOTHING)
+    content = models.CharField(max_length=5000)
+    rate = models.PositiveIntegerField()
+    def __str__(self):
+        return self.user.Name
+
 
     

@@ -3,11 +3,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name = "viewport" content="width=device-width, intial-scale = 1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{%static 'css/Food_Order.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+    <script src="https://use.fontawesome.com/a6f0361695.js"></script>
     <title>Food Order</title>
 </head>
 <body>
@@ -55,7 +56,7 @@
               <i class = "fas fa-star"></i>
               <i class = "fas fa-star"></i>
               <i class = "fas fa-star-half-alt"></i>
-              <span>4.7(21)</span>
+              <span>{{food.Food_Avg_Rating}}({{food.users}})</span>
             </div>
   
             <div class = "product-price">
@@ -74,9 +75,8 @@
             </div>
   
             <div class = "purchase-info">
-              <button type = "button" class = "btn">Order Now</button>
+              <button type = "button" onClick="document.location='account/profile'" class = "btn">Order Now</button>
             </div>
-  
           </div>
         </div>
       </div>
@@ -94,33 +94,83 @@
 </div>
 <!-- nav area end -->
 <!-- feedback form -->
-<div class="container">
-    <div class="post">
-      <div class="text">
-Thanks for rating us!</div>
-<div class="edit">
-EDIT</div>
+<form id="feedback" method = "POST" action="{%url 'FeedBack' food.id %}">
+  {%csrf_token%}
+ <div class="pinfo">Rate our overall services.</div>
+<div class="form-group">
+  <div class="col-md-4 inputGroupContainer">
+  <div class="input-group">
+  <span class="input-group-addon"><i class="fa fa-heart"></i></span>
+   <select class="form-control" id="rate" name = "rating">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+    </div>
+  </div>
 </div>
-<div class="star-widget">
-      <input type="radio" name="rate" id="rate-5">
-      <label for="rate-5" class="fas fa-star"></label>
-      <input type="radio" name="rate" id="rate-4">
-      <label for="rate-4" class="fas fa-star"></label>
-      <input type="radio" name="rate" id="rate-3">
-      <label for="rate-3" class="fas fa-star"></label>
-      <input type="radio" name="rate" id="rate-2">
-      <label for="rate-2" class="fas fa-star"></label>
-      <input type="radio" name="rate" id="rate-1">
-      <label for="rate-1" class="fas fa-star"></label>
-      <form action="#">
-        <header></header>
-        <div class="textarea">
-          <textarea cols="" placeholder="Describe your experience.."></textarea> 
- <br />
-<div class="btn">
-<button type="submit">Post</button>
-        </div>
-        </div>
+
+ <div class="pinfo">Write your feedback.</div>
+  
+
+<div class="form-group">
+  <div class="col-md-4 inputGroupContainer">
+  <div class="input-group">
+  <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+  <textarea class="form-control" id="review" name = "feedback" rows="3"></textarea>
+ 
+    </div>
+  </div>
+</div>
+
+ <button type="submit" class="btn btn-primary">Submit</button>
+
+
+</form>
+<!-- comant show area -->
+<!--Testimonials------------------->
+<section id="testimonials">
+  <!--heading--->
+  <div class="testimonial-heading">
+      <span>Comments</span>
+      <h1>Clients Says</h1>
+  </div>
+  <!--testimonials-box-container------>
+  <div class="testimonial-box-container">
+    {%for comment in rating %}
+      <!--BOX-1-------------->
+      <div class="testimonial-box">
+          <!--top------------------------->
+          <div class="box-top">
+              <!--profile----->
+              <div class="profile">
+                  <!--img---->
+                  <div class="profile-img">
+                      <img src="/media/{{comment.user.profile_pic}}" />
+                  </div>
+                  <!--name-and-username-->
+                  <div class="name-user">
+                      <strong>{{comment.user.Name}}</strong>
+                      <span>{{comment.user.email}}</span>
+                  </div>
+              </div>
+              <!--reviews------>
+              <div class="reviews">
+                <i class="fas fa-star"></i>
+                <h6>{{comment.rate}}</h6>
+              </div>
+          </div>
+          <!--Comments---------------------------------------->
+          <div class="client-comment">
+              <p>{{comment.content}}</p>
+          </div>
+      </div>
+      {%endfor%}
+      </section>
+      <!-- camment show area end -->
+
 <!-- feedback form end -->
 
       <script>
@@ -144,20 +194,6 @@ function slideImage(){
 
 window.addEventListener('resize', slideImage);
 
-// FeedBack form
-const btn = document.querySelector("button");
-    const post = document.querySelector(".post");
-    const widget = document.querySelector(".star-widget");
-    const editBtn = document.querySelector(".edit");
-    btn.onclick = ()=>{
-      widget.style.display = "none";
-      post.style.display = "block";
-      editBtn.onclick = ()=>{
-        widget.style.display = "block";
-        post.style.display = "none";
-      }
-      return false;
-    }
       </script>
 </body>
 </html>

@@ -1,9 +1,11 @@
 from django.contrib import messages
+from django.http import HttpResponse,HttpResponseRedirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
-from .models import Food
+from .models import Food,Review
 from django.contrib.auth.decorators import login_required
+from django.db.models import Max, Min, Avg, Count
 
 # Home page Backand Coding
 def Home(request):
@@ -44,6 +46,21 @@ def Profile(request):
         
     else:
        return render(request,'profile_page.html')
+
+# FeedBack
+@login_required(login_url='/') 
+def FeedBack(request,food_id):
+    user = User.objects.get(id = request.user.id)
+    food = Food.objects.get(id = food_id)
+    if(request.method =='POST'):
+        comment = request.POST['feedback']
+        rating=  request.POST['rating']
+        user_feedback = Review(user = user,food = food, content = comment, rate = rating)
+        user_feedback.save()
+        return redirect('FoodMenu')
+    else:
+        return render(request, 'Food_Order.html',{'food': food}) 
+
 
 #Registration and Login form 
 User = get_user_model()
@@ -102,9 +119,20 @@ def Cart(request):
     return render(request,'Cart.html')
 
 #Order Page
-@login_required(login_url='/') 
+@login_required(login_url='Login') 
 def FoodOrder(request,food_id):
     food = Food.objects.get(id = food_id)
-    print(food.Food_Name)
-    print(food)
-    return render(request,'Food_Order.html',{"food":food})
+    rating = Review.objects.filter(food_id = food_id)
+    rate = Review.objects.filter(food_id= food_id).aggregate(Avg('rate'))
+    num = Review.objects.filter(food_id= food_id).aggregate(Count('user'))
+    print(rate["rate__avg"])
+    print(num["user__count"])
+    food.users = num["user__count"]
+    food.Food_Avg_Rating = rate["rate__avg"]
+    food.save()
+    return render(request,'Food_Order.html',{"food":food,"rating":rating})
+
+
+
+def Payment(request):
+    return render(request,"Payment.html")
