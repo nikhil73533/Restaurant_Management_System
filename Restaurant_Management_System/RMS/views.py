@@ -6,7 +6,7 @@ from django.shortcuts import redirect, render
 from .models import Food,Review
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Min, Avg, Count
-
+from django.shortcuts import get_object_or_404
 # Home page Backand Coding
 def Home(request):
     return render(request,'Home.html')
@@ -111,8 +111,24 @@ def Logout(request):
 
 # Food Manue
 def FoodMenu(request):
-    food = Food.objects.all()
-    return render(request,'Food_menu.html',{'food':food})
+    filter_bar = ""
+    print(request.GET)
+    food_type   = request.GET.get('ca ')
+    print(food_type)
+    if(food_type):
+        print(food_type)
+        food = Food.objects.filter(Food_Type = food_type)
+       
+        print(food)
+    else:
+        food = Food.objects.all()
+    cate = []
+    filter = Food.objects.all()
+        
+    for i in filter:
+        cate.append(i.Food_Type)
+    cate= set(cate)
+    return render(request,'Food_menu.html',{'food':food,"cate":cate})
 
 # Add To Cart
 def Cart(request):
@@ -136,3 +152,5 @@ def FoodOrder(request,food_id):
 
 def Payment(request):
     return render(request,"Payment.html")
+
+

@@ -6,11 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{%static 'css/Food_menu.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
     <title>Food Menu</title>
 </head>
 <body>
     <!-- Header area -->
 <div class="menu">
+    
     <div class="heading">
         <h1>KALASH DA DHABA</h1>
         <h3>&mdash; MENU &mdash;</h3>
@@ -21,6 +24,8 @@
     {%for food_items in food%}
     <div class="food-items">
         <img src="/media/{{food_items.food_pic}}" alt="food_pic">
+        <form action="food_order/{{food_items.id}}/">
+        </form>
     <div class="details">
         <div class="details-sub">
             <h5>
@@ -38,23 +43,42 @@
     </div>
     {%endfor%}
 </div>
+
+<!-- Filter Bar -->
+<section>
+    <ul>
+        <li class="list " data-filter = "All">Filters <i class="fas fa-filter"></i></li>
+        <li class="list " ><a class = "filter" href="{{request.path}}">All</a></li>
+        {%for category in cate%}
+        <li class="list" ><a  class = "filter" href="/user/menu?ca ={{category}}">{{category}}</a></li>
+        {%endfor%}
+    </ul>
+  </section>
+<!-- Filter Bar end -->
+
+
 <!-- nav area start -->
+
 <div class="nav">
     <ul>
         <li><a href="/">Home</a></li>
         <li><a href="#">About</a></li>
         <li><a href="#">Orders</a></li>
-        <li>Filters
-            <ul class  = "dropdown">
-                <li><input type="checkbox"> Indian </li>
-                <li> <input type="checkbox"> Chines</li>
-                <li> <input type="checkbox"> Maxican</li>
-                <li> <input type="checkbox"> Ittliean</li>
-            </ul>
+        <li><a href="#">Filters</a>
         </li>
         <li><a href="#">Contact</a></li>
     </ul>
 </div>
 <!-- nav area end -->
+
+ <script type = "text/javascript">
+// Add active class on selected item
+('.filter').click(function(){
+        this.addClass('active').siblings().removeClass('active')
+    })  
+</script>
+
+ 
+
 </body>
 </html>

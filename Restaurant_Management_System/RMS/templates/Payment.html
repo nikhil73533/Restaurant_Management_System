@@ -9,6 +9,59 @@
     <title>Payment</title>
 </head>
 <body>
-    <h1>Nikhil Gupta</h1>
+    <div id="wrapper">
+        <div class="payment">
+            <div class="payment_product">
+                <img src="../static/bg1.jpg" alt="Food_Img">
+                <div >
+                    <h2>{{food.Food_Name}}</h2>
+                    <div class="price">
+                        &#8377;  250
+                    </div>
+                </div>
+            </div>
+            <div class="payment_bill">
+                <h3>Recepit Summary</h3>
+                <ul>
+                    <li>
+                        <span>250 x 1 item</span>
+                        <span>&#8377; 2500.00 </span>
+                    </li>
+                    <li>
+                        <span>Discount</span>
+                        <span>&#8377; 50 </span>
+                    </li>
+                    <li>
+                        <span>Subtotal</span>
+                        <span>&#8377; 200.00 </span>
+                    </li>
+                    <li>
+                        <span>Tax</span>
+                        <span>&#8377; 50.00 </span>
+                    </li>
+                    <li>
+                        <span>Total</span>
+                        <span>&#8377; 205.00 </span>
+                    </li>
+                </ul>
+                <hr>
+                <form action="#" class="payment_form">
+                    <div class="form-input">
+                        <input type="text" placeholder="Card Number" style="width: 100%;">
+                    </div>
+                    <div class="form-input">
+                        <select name="" id="">
+                            <option value="">Month</option>
+                        </select>
+                        <select name="" id="">
+                            <option value="">Year</option>
+                        </select>
+                        <input type="text" placeholder="CVV">
+                    </div>
+                    <button type = "submit">Order Now</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

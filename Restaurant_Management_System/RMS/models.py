@@ -14,6 +14,12 @@ class Food(models.Model):
     def __str__(self):
         return self.Food_Name
 
+class Foodtype(models.Model):
+    food_type = models.CharField(max_length=60)
+    def __str__(self):
+        return self.food_type
+        
+
 # Creating custom  user models here.
 class MyUserManager(BaseUserManager):
     def profile_pic(self,profile_pic):
@@ -90,8 +96,8 @@ class orders(models.Model):
 
 # FeedBack Model
 class Review(models.Model):
-    user = models.ForeignKey(MyUser,default=None,on_delete = models.DO_NOTHING)
-    food = models.ForeignKey(Food,default=None, on_delete = models.DO_NOTHING)
+    user = models.ForeignKey(MyUser,default=None,on_delete = models.CASCADE)
+    food = models.ForeignKey(Food,default=None, on_delete = models.CASCADE)
     content = models.CharField(max_length=5000)
     rate = models.PositiveIntegerField()
     def __str__(self):
