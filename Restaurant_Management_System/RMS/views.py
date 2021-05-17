@@ -7,6 +7,7 @@ from .models import Food,Review
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Min, Avg, Count
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 # Home page Backand Coding
 def Home(request):
     return render(request,'Home.html')
@@ -112,14 +113,9 @@ def Logout(request):
 # Food Manue
 def FoodMenu(request):
     filter_bar = ""
-    print(request.GET)
     food_type   = request.GET.get('ca ')
-    print(food_type)
     if(food_type):
-        print(food_type)
         food = Food.objects.filter(Food_Type = food_type)
-       
-        print(food)
     else:
         food = Food.objects.all()
     cate = []
@@ -128,6 +124,14 @@ def FoodMenu(request):
     for i in filter:
         cate.append(i.Food_Type)
     cate= set(cate)
+    if(request.method =='POST'):
+        search = request.POST["box"]
+        food = Food.objects.filter(Q(Food_Name__icontains=search))
+        filter = Food.objects.all()
+        cate = []
+        for i in filter:
+            cate.append(i.Food_Type)
+        cate= set(cate)
     return render(request,'Food_menu.html',{'food':food,"cate":cate})
 
 # Add To Cart
@@ -149,8 +153,10 @@ def FoodOrder(request,food_id):
     return render(request,'Food_Order.html',{"food":food,"rating":rating})
 
 
-
-def Payment(request):
-    return render(request,"Payment.html")
+@login_required(login_url='Login') 
+def Payment(request,food_id):
+    food = Food.objects.get(id = food_id)
+    user = User.objects.get(id = request.user.id)
+    return render(request,"Payment.html", {"user":user,"food":food})
 
 

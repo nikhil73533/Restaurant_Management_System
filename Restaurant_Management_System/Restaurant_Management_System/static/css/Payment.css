@@ -1,114 +1,259 @@
-*{
-    box-sizing: border-box;
+@import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+body {
+  font-family:"Raleway";
+  font-size: 17px;
+  padding: 8px;
+}
+h2{
+  text-align:left;
 }
 
-body{
-    padding: 0;
-    margin: 0;
-    font-family: sans-serif;
+* {
+  box-sizing: border-box;
 }
 
-#wrapper{
-    width: 100vw;
-    height: 100vh;
-    background-image:linear-gradient(rgba(0,0,0,0.4),rgba(0, 0, 0, 0.4)), url(../bg1.jpg);
-    align-items: center;
-    display: flex;
-    justify-content: center;
+.error {
+  color: red;
+  border-color: red;
 }
 
-.payment{
-    display: flex;
-    width: 90%;
-    height: 90%;
-    background:#fff ;
-    box-shadow: 0x 0px 30px 15px rgba(0, 0, 0, 0.2);
-}
-.payment_product{
-    display: flex;
-    padding: 40px;
-    align-items: flex-end;
-    width: 40%;
-    height: 100%;
-    background-color:orangered;
-    background-size: cover;
-    color: #ffa000;
-
-}  
- .payment_product img{
-     width:180%;
-     height: 50%;
-    top:-338px;
-    right: 30px;
-    position: relative;
-    border-radius: 5px;
-    box-shadow: 0x 0px 30px 15px rgba(0, 0, 0, 0.2);
- }
-.payment_bill{
-    width: 80%;
-    height: 100%;
-    padding: 40px;
-    background-color: #fff;
-
-}
-h3{
-    color: #ffa000;
-    font-weight: 400;
-    font-size: 20px;
-}
-ul{
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
+.row {
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  -ms-flex-wrap: wrap; /* IE10 */
+  flex-wrap: wrap;
+  margin: 0 -10px;
 }
 
-.price{
-background-color: #ffa000;
-color: #fff;
-display: inline-block;
-padding: 10px 30px;
-font-size: 22px;
-font-weight: 800;
-border-radius: 2px;
+.col-25 {
+  -ms-flex: 25%; /* IE10 */
+  flex: 25%;
+}
+
+.col-50 {
+  -ms-flex: 50%; /* IE10 */
+  flex: 50%;
+}
+
+.col-75 {
+  -ms-flex: 75%; /* IE10 */
+  flex: 75%;
+}
+
+.col-25,.col-50,.col-75 {
+  padding: 0 16px;
+}
+
+.container {
+  background-color: #FFFFFF;
+  padding: 3px 18px 13px 18px;
+  border: 1px solid lightgrey;
+  border-radius: 3px;
+  box-shadow: 0 0 2rem 0 rgba(168, 180, 194, 0.37);
+}
+
+
+input[type=text] {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 12px;
+  border: 1px solid rgb(130, 26, 26);
+  border-radius: 1px;
+}
+
+label {
+  margin-bottom: 10px;
+  display: block;
+}
+
+.icon-container {
+  margin-bottom: 20px;
+  padding: 7px 0;
+  font-size: 24px;
+}
+
+.btn {
+  background-color: #01BAEF;
+  color: white;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  width: 100%;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 17px;
+  box-shadow: 0 0 1rem 0 rgba(99, 123, 150, 0.329);
 
 }
 
-li{
-    display: flex;
-    justify-content: space-between;
-    line-height: 2;
-    color: #666;
-}
-li:nth-last-child(1){
-    color: #ffa000;
+.btn:hover {
+  background-color: #0CBABA;
 }
 
-hr{
-    border-color: #423131;
-    border-style: dashed;
+a {
+  color: #2196F3;
+  text-decoration: none;
 }
 
-.payment_form input,select{
-    border: none;
-    background-color: #e9ecec;
-    padding: 15px 10px;
-    width: 32%;
-    border-radius: 2px;
+hr {
+  border: 1px solid lightgrey;
 }
 
-.payment_form .form-input{
-    display: flex;
-    justify-content: space-between;
- margin-bottom: 15px;
+span.price {
+  float: right;
+  color: grey;
+}
+
+/* nav bar */
+
+.nav ul{
+  list-style: none;
+}
+.nav{
+  display: inline-block;
+  text-align: center;
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.nav li:hover{
+  background: #ff553b;
+}
+.nav>ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  background: #313131;
+  color: rgb(255, 255, 255);
+  width: 1000px;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+.nav>ul>li>a{
+  
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav> ul > li{
+  position: relative;
+  cursor: pointer;
+  font-size: 15px;
+  letter-spacing: 2px;
+  float: left;
+  width: 200px;
+  height: 50px;
+  line-height: 50px;
+}
+
+
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns 
+  stack on top of each other instead of next to each other (also change the direction 
+  - make the "cart" column go on top) 
+*/
+@media (max-width: 800px) {
+  .row {
+      flex-direction: column-reverse;
+  }
+  .col-25 {
+      margin-bottom: 20px;
+  }
+}
+
+/* Pop button  */
+
+.center {
+  position:absolute;
+  top:90%;
+  left:50%;
+  transform:translate(-50%,-50%);
+}
+.popup {
+  width:350px;
+  height:280px;
+  padding:30px 20px;
+  background:#f5f5f5;
+  border-radius:10px;
+  box-sizing:border-box;
+  z-index:2;
+  text-align:center;
+  opacity:0;
+  top:-200%;
+  transform:translate(-50%,-50%) scale(0.5);
+  transition: opacity 300ms ease-in-out,
+              top 1000ms ease-in-out,
+              transform 1000ms ease-in-out;
+}
+.popup.active {
+  opacity:1;
+  top:50%;
+  transform:translate(-50%,-50%) scale(1);
+  transition: transform 300ms cubic-bezier(0.18,0.89,0.43,1.19);
+}
+.popup .icon {
+  margin:5px 0px;
+  width:50px;
+  height:50px;
+  border:2px solid #34f234;
+  text-align:center;
+  display:inline-block;
+  border-radius:50%;
+  line-height:60px;
+}
+.popup .icon i.fa {
+  font-size:30px;
+  color:#34f234;
 } 
-.payment_form button{
-    width: 100%;
-    border: none;
-    background-color: #ffa000;
-    color: #fff;
-    padding: 15px 0;
-    cursor: pointer;
-    font-size: 18px;
-    border-radius: 2px;
-
+.popup .title {
+  margin:5px 0px;
+  font-size:30px;
+  font-weight:600;
+}
+.popup .description {
+  color:#222;
+  font-size:15px;
+  padding:5px;
+}
+.popup .dismiss-btn {
+  margin-top:15px;
+}
+.popup .dismiss-btn button {
+  padding:10px 20px;
+  background:#111;
+  color:#f5f5f5;
+  border:2px solid #111;
+  font-size:16px;
+  font-weight:600;
+  outline:none;
+  border-radius:10px;
+  cursor:pointer;
+  transition: all 300ms ease-in-out;
+}
+.popup .dismiss-btn button:hover {
+  color:#111;
+  background:#f5f5f5;
+}
+.popup > div {
+  position:relative;
+  top:10px;
+  opacity:0;
+}
+.popup.active > div {
+  top:0px;
+  opacity:1;
+}
+.popup.active .icon {
+  transition: all 300ms ease-in-out 250ms;
+}
+.popup.active .title {
+  transition: all 300ms ease-in-out 300ms;
+}
+.popup.active .description {
+  transition: all 300ms ease-in-out 350ms;
+}
+.popup.active .dismiss-btn {
+  transition: all 300ms ease-in-out 400ms;
 }

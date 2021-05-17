@@ -56,7 +56,16 @@
   </section>
 <!-- Filter Bar end -->
 
-
+<!-- Search Bar area start -->
+<div class="main">
+    <form action="{{request.path}}"method  ="POST">{%csrf_token%}
+        <input type="text" name = "box" name = "box" placeholder="   Search.... ">
+    <div class="btn">
+        <input type="submit" name = "search" value  = "Search" class="btn-btn"/>
+    </div>
+    </form>
+</div>
+<!-- Search Bar area end -->
 <!-- nav area start -->
 
 <div class="nav">
