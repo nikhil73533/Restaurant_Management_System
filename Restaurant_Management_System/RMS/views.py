@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.http import HttpResponse,HttpResponseRedirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
@@ -112,6 +111,9 @@ def Logout(request):
 
 # Food Manue
 def FoodMenu(request):
+    cart = request.session.get('cart')
+    if not cart:
+        request.session['cart'] = {}
     filter_bar = ""
     food_type   = request.GET.get('ca ')
     if(food_type):
@@ -135,13 +137,48 @@ def FoodMenu(request):
     return render(request,'Food_menu.html',{'food':food,"cate":cate})
 
 # Add To Cart
+@login_required(login_url='Login') 
 def Cart(request):
-    return render(request,'Cart.html')
+    if(request.method=="POST"):
+        food = request.POST['food_id']
+        remove = request.POST.get('remove')
+        cart = request.session.get('cart')
+        if cart:
+            quantity = cart.get(food)
+            if(quantity):
+                if(remove):
+                    if(quantity<=1):
+                        cart.pop(food)
+                    else:
+                        cart[food] = quantity - 1
+                else:
+                    cart[food] = quantity + 1
+            else:
+                cart[food] = 1
+        else:
+            cart = {}
+            cart[food] = 1
+        request.session['cart'] = cart
+        print( request.session['cart'])
+    return redirect('FoodMenu')
+
+@login_required(login_url='Login')     
+def AddCart(request):
+    ids = list(request.session.get('cart'))
+    product = Food.objects.filter(id__in = ids)
+    return   render(request,'cart_product.html',{'product':product})
 
 #Order Page
 @login_required(login_url='Login') 
 def FoodOrder(request,food_id):
+    discount = False
     food = Food.objects.get(id = food_id)
+    new_food_price = food.Food_Price
+    if(food.Discount_In_Percentage>0):
+        discount = True
+        difference = (food.Food_Price)*((food.Discount_In_Percentage)/(100))
+        new_food_price = int(food.Food_Price - difference)
+
     rating = Review.objects.filter(food_id = food_id)
     rate = Review.objects.filter(food_id= food_id).aggregate(Avg('rate'))
     num = Review.objects.filter(food_id= food_id).aggregate(Count('user'))
@@ -150,7 +187,7 @@ def FoodOrder(request,food_id):
     food.users = num["user__count"]
     food.Food_Avg_Rating = rate["rate__avg"]
     food.save()
-    return render(request,'Food_Order.html',{"food":food,"rating":rating})
+    return render(request,'Food_Order.html',{"food":food,"rating":rating,"Discount":discount,"new_food_price":new_food_price})
 
 
 @login_required(login_url='Login') 

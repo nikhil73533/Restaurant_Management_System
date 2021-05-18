@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,Permissi
 class Food(models.Model):
     Food_Name = models.CharField(max_length = 100)
     Food_Price = models.IntegerField()
+    Discount_In_Percentage = models.IntegerField(blank=True,null = True)
     Food_Avg_Rating = models.FloatField(null = True)
     Food_Type = models.CharField(max_length = 100)
     Description = models.CharField(max_length  = 5000)

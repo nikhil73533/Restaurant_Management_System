@@ -1,0 +1,130 @@
+{%load static %}
+{%load cart %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"href="main.css">
+    <link rel="stylesheet"href="cart.css">
+    <script src="https://kit.fontawesome.com/332a215f17.js" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{%static 'css/Cart.css'%}">
+    <title>Cart</title>
+    <style>
+
+    </style>
+</head>
+<body>
+     <!-- Header area -->
+<div class="menu">
+    
+    <div class="heading">
+        <h1>KALASH DA DHABA</h1>
+        <h3>&mdash; MENU &mdash;</h3>
+         
+    </div>
+</div>
+    <!-- Header area finish -->
+    <!-- nav area start -->
+
+<div class="nav">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Orders</a></li>
+        <li><a href="{%url 'FoodMenu'%}">Menu</a>
+        </li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+</div>
+<!-- nav area end -->
+
+ <!---Hero Section-->
+ <section id="hero">
+    <div class="hero-container">
+        <div class="hero-logo">
+            <h1 class="font-weight-bold">Cart Products</h1>
+            
+        </div>
+        </div>
+</section>
+<!---End of Hero Section-->
+<!--Cart Section-->
+<section class="mt-5">
+    <div class="container">
+        <div class="cart">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"class="text-white">Product</th>
+                        <th scope="col"class="text-white">Price</th>
+                        <th scope="col"class="text-white">Quantity</th>
+                        <th scope="col"class="text-white">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for food_items in product%}
+
+                    <tr>
+                        <td>
+                            <div class="main">
+                                <div class="d-flex">
+                 <img src="/media/{{food_items.food_pic}}"alt="food Img" height="98" width="145">
+                                </div>
+                                <div class="des">
+                                    <p>{{food_items.Food_Name}}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <h6>&#8377; {{food_items.Food_Price}}</h6>
+                        </td>
+                        <td>
+                            <div class="counter">
+                               <h6>{{food_items|cart_count:request.session.cart}} in cart</h6>
+                            </div>
+                        </td>
+                        <td>
+                            <h6>&#8377; {{food_items|price_total:request.session.cart}}</h6>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                    <!----->
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+</section>
+<div class="col-lg-4 offset-lg-4">
+    <div class="checkout">
+        <ul>
+            <li class="subtotal">subtotal
+                <span>&#8377; {{product|Total_Price:request.session.cart}}</span>
+            </li>
+            <li class="subtotal">SGST
+                <span>&#8377;12 </span>
+            </li>
+            <li class="subtotal">CGST
+                <span>&#8377; 13</span>
+            </li>
+            <li class="cart-total">Total
+            <span>$60.00</span></li>
+        </ul>
+        <a href="#"class="proceed-btn">Proceed to Checkout</a>
+    </div>
+</div>
+
+
+
+</div>
+</body>
+</html>

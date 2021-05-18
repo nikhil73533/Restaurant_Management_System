@@ -86,17 +86,22 @@ details>p{
     font-weight: 400;
     align-self: stretch;
 }
-.details>button{
+form{
+    height: 20px;
+}
+.details>form>button{
     background-color: #cb202d;
     border: none;
+    padding: 10px;
     color: #ffffff;
+    cursor: pointer;
     font-size: 16px;
     font-weight: 600;
     border-radius: 5px;
     width: 180px;
 
 } 
-
+/* nav bar */
 .nav ul{
     list-style: none;
 }

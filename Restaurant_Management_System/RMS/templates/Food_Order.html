@@ -1,4 +1,5 @@
 {%load static %}
+{%load cart %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,9 +61,14 @@
             </div>
   
             <div class = "product-price">
-              <!-- <p class = "last-price">Old Price: <span>$257.00</span></p> -->
-              <p class = "new-price">Price: <span>&#8377; {{food.Food_Price}} </span></p>
+           {%if Discount %}
+             <p class = "last-price">Old Price: <span>&#8377; {{food.Food_Price}}</span></p> 
+              <p class = "new-price">New Price: <span>&#8377; {{new_food_price}} ({{food.Discount_In_Percentage}}%) </span></p>
+            {% else %}
+              <p class = "new-price">Price: <span>&#8377; {{food.Food_Price}} ({{food.Discount_In_Percentage}}%) </span></p>
+            {% endif %}  
             </div>
+          
   
             <div class = "product-detail">
               <h2>about this Food: </h2>
