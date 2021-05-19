@@ -63,6 +63,20 @@ input[type=text] {
 
 label {
   margin-bottom: 10px;
+  font-size: 25px;
+  display: inline-block;
+}
+
+.cname {
+  border-radius: 70%;
+  border: 2px solid #d8e4e2;
+  height: 2.1em;
+  width: 2.1em;
+  margin-right: 15px;
+  box-sizing: border-box;
+  padding: 4px;
+}
+.col-35{
   display: block;
 }
 

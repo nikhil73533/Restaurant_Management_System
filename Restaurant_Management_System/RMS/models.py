@@ -27,7 +27,7 @@ class MyUserManager(BaseUserManager):
         user = self.model(
             profile_pic = profile_pic
         )
-    def create_user(self,email,Name,phone,Address,password = None):
+    def create_user(self,email,Name,phone,Address,pincode,city,state,password = None):
         if not email:
             raise ValueError("Email is required")
         if not Name:
@@ -40,19 +40,26 @@ class MyUserManager(BaseUserManager):
             email = self.normalize_email(email),
             Name = Name,
             phone = phone,
-            Address = Address
+            Address = Address,
+            pincode = pincode,
+            city = city,
+            state = state
         )
         user.set_password(password)
         user.save(using = self._db)
         return user
 
-    def create_superuser(self,email,Name,phone,Address,password = None):
+    def create_superuser(self,email,Name,phone,Address,pincode,city,state,password = None):
         user = self.create_user(
             email = email,
             Name = Name,
             phone = phone,
             password = password,
             Address  = Address,
+            pincode = pincode,
+            city = city,
+            state = state
+
         )
         user.is_admin = True
         user.is_staff =True
@@ -64,6 +71,9 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     Name = models.CharField(verbose_name = "Name",max_length = 50)
     email = models.EmailField(verbose_name = "email address",max_length = 60,unique = True,blank = True)
     Address = models.CharField(verbose_name = "Address",max_length = 200)
+    state = models.CharField(verbose_name = "state",max_length = 100,null=True)
+    city = models.CharField(verbose_name = "city",max_length = 100,null=True)
+    pincode = models.CharField(verbose_name = "Pincode",max_length = 50,null=True)
     profile_pic = models.ImageField(upload_to='profile_pic/', blank = True, null = True)
     phone = models.CharField(max_length = 20,verbose_name = "phone number")
     last_login = models.DateTimeField(verbose_name = "last login",auto_now = True)
@@ -92,9 +102,24 @@ class orders(models.Model):
     food_id = models.ForeignKey(Food,default=None, on_delete = models.CASCADE)
     date_time = models.DateTimeField('date published')
     order_address = models.CharField(max_length=5000)
+    state = models.CharField(max_length=5000,null=True)
+    city = models.CharField(max_length=5000,null=True)
+    pincode = models.CharField(max_length=5000,null=True)
     quantity = models.IntegerField()
     deliver_status = models.BooleanField(default=False)
+    penilty = models.PositiveIntegerField(null = True)
 
+
+#Bill Model
+class Bill(models.Model):
+    order_no = models.ForeignKey(orders,default=None,on_delete=models.CASCADE)
+    user = models.ForeignKey(MyUser,default=None,on_delete = models.CASCADE)
+    food = models.ForeignKey(Food,default=None, on_delete = models.CASCADE)
+    payment_status = models.BooleanField(default=False)
+    discount = models.PositiveIntegerField()
+    tex = models.PositiveIntegerField()
+    penilty = models.PositiveIntegerField(null = True)
+    total_amount = models.PositiveIntegerField()
 # FeedBack Model
 class Review(models.Model):
     user = models.ForeignKey(MyUser,default=None,on_delete = models.CASCADE)

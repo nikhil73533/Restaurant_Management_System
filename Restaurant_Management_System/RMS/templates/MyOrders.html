@@ -1,0 +1,74 @@
+{%load static%}
+{%load cart %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{%static '/css/MyOrders.css' %}">
+    <title>Shoping Cart</title>
+</head>
+<body>
+    
+<!-- Header area -->
+<div class="menu">
+    
+    <div class="heading">
+        <h1>KALASH DA DHABA</h1>
+        <h3>&mdash; MENU &mdash;</h3>
+         
+    </div>
+</div>
+    <!-- Header area finish -->
+    <!-- nav area start -->
+
+<div class="nav">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="{%url 'FoodMenu'%}">Menu</a>
+        </li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+</div>
+<!-- nav area end -->
+
+<div class="container">
+    <div class="border rounded p-4 m-4">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Sno</th>
+                <th scope="col">product</th>
+                <th scope="col">Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Cancle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+                <td>@mdo</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+                <td><button class="btn btn-primary">Cancle</button></td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+</div> 
+
+</body>
+</html>

@@ -49,7 +49,7 @@ form{
 }
 .main_2 .alert {
  
-  line-height: 35;
+  line-height: 37;
   padding: 0px 50px;
   margin: 5px auto;
   left: 50px;
@@ -67,7 +67,7 @@ input{
     justify-content: center;
 }
 #btn{
-  top: 70%;
+  top: 95%;
   left: 40%;
   position: absolute;
   width: 110px;

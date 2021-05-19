@@ -117,7 +117,7 @@ img{
 .product-detail ul li{
     margin: 0;
     list-style: none;
-    background: url(shoes_images/checked.png) left center no-repeat;
+    background: url(../static/checked.png) left center no-repeat;
     background-size: 18px;
     padding-left: 1.7rem;
     margin: 0.4rem 0;
@@ -140,8 +140,26 @@ img{
     margin-right: 0.2rem;
     margin-bottom: 1rem;
 }
-.purchase-info input{
-    width: 60px;
+/* .purchase-info input[type = "text"]{
+    width: 90px;
+    background: rgb(209, 206, 206);
+    display: inline;
+} */
+
+.text-center.col {
+  display: inline;
+ 
+}
+
+input.btn.btn-block.btn-secondary {
+  width: 41px;
+  background: rgb(192, 187, 187);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+form.col-2 {
+  display: inline;
 }
 .purchase-info .btn{
     cursor: pointer;
@@ -149,6 +167,7 @@ img{
 }
 .purchase-info .btn:first-of-type{
     background: #256eff;
+    cursor:text;
 }
 .purchase-info .btn:last-of-type{
     background: #f64749;

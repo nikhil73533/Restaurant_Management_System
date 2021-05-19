@@ -81,7 +81,21 @@
             </div>
   
             <div class = "purchase-info">
-              <button type = "button" onClick="document.location='{%url 'Payment' food.id %}'" class = "btn">Order Now</button>
+              <form action="{{request.path}}"  class="col-2" method="POST">{%csrf_token%}
+                <input type="text" name = "qty" value = {{qty}} hidden>
+                <input type="text" name = "remove" value = 'True' hidden>
+                <input type="submit" value = " - " class=" btn btn-block btn-secondary">
+              </form>
+
+            <div class="text-center col">   {{qty}}  </div>
+          <form action="{{request.path}}"  class="col-2" method="POST">{%csrf_token%}
+            <input type="text" name = "qty" value={{qty}} hidden>
+            <input type="submit" value = " + " class=" btn btn-block btn-secondary">
+          </form>
+             <button type = "button" class = "btn">
+              Qty <i class="fas fa-sort-amount-up"></i>
+            </button>
+              <button type = "button" onClick="document.location='{%url 'Payment' food.id qty %}'" class = "btn">Order Now</button>
             </div>
           </div>
         </div>
@@ -92,7 +106,7 @@
     <ul>
         <li><a href="/">Home</a></li>
         <li><a href="#">About</a></li>
-        <li><a href="#">Orders</a></li>
+         <li><a href="{%url 'MyOrders'%}">Orders</a></li>
         <li><a href="{%url 'FoodMenu'%}">Menu</a>
         </li>
         <li><a href="#">Contact</a></li>

@@ -38,7 +38,7 @@
     <ul>
         <li><a href="/">Home</a></li>
         <li><a href="#">About</a></li>
-        <li><a href="#">Orders</a></li>
+         <li><a href="{%url 'MyOrders'%}">Orders</a><span class = "badge badge-info">0</span></li>
         <li><a href="{%url 'FoodMenu'%}">Menu</a>
         </li>
         <li><a href="#">Contact</a></li>
@@ -84,9 +84,15 @@
                                 </div>
                             </div>
                         </td>
+                         {% if food_items|is_discount:request.session.cart %}
                         <td>
+                            <h6>&#8377; {{food_items|discount_calculater:request.session.cart}}</h6>
+                        </td>
+                        {% else %}
+                         <td>
                             <h6>&#8377; {{food_items.Food_Price}}</h6>
                         </td>
+                        {% endif %}
                         <td>
                             <div class="counter">
                                <h6>{{food_items|cart_count:request.session.cart}} in cart</h6>

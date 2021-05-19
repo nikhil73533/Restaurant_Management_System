@@ -1,12 +1,17 @@
+from django import template
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
-from .models import Food,Review
+from django.utils import timezone
+from .models import Food,Review, orders, Bill
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Min, Avg, Count
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
 # Home page Backand Coding
 def Home(request):
     return render(request,'Home.html')
@@ -28,11 +33,17 @@ def Profile(request):
         Email = request.POST['email']
         Address = request.POST['address']
         phone = request.POST['phone']
+        state = request.POST['state']
+        city = request.POST['city']
+        pincode = request.POST['pincode']
         user = User.objects.get(id = request.user.id)
         user.Name = Name
         user.email = Email
         user.Address = Address
         user.phone = phone
+        user.city = city
+        user.state = state
+        user.pincode = pincode
         user.save()
 
         if("profile" in request.FILES):
@@ -72,6 +83,9 @@ def Register(request):
         confirm_password = request.POST['confirm_password']
         phone_number = request.POST['phone_number']
         address  = request.POST['address']
+        city = request.POST['city']
+        state = request.POST['state']
+        pincode = request.POST['pincode']
         
         if(password==confirm_password):
             if(User.objects.filter(email=email).exists()):
@@ -81,7 +95,7 @@ def Register(request):
                 messages.info(request,'Phone Number Taken')
                 return render(request,'Login_Registration.html')
             else:
-                user  = User.objects.create_user(Name = Name,email = email,password = password,phone = phone_number,Address = address)
+                user  = User.objects.create_user(Name = Name,email = email,password = password,phone = phone_number,Address = address,city = city,state = state,pincode = pincode)
                 user.save()
                 return render(request,'Login_Registration.html')
         else:
@@ -111,6 +125,7 @@ def Logout(request):
 
 # Food Manue
 def FoodMenu(request):
+    qty = 0
     cart = request.session.get('cart')
     if not cart:
         request.session['cart'] = {}
@@ -134,7 +149,7 @@ def FoodMenu(request):
         for i in filter:
             cate.append(i.Food_Type)
         cate= set(cate)
-    return render(request,'Food_menu.html',{'food':food,"cate":cate})
+    return render(request,'Food_menu.html',{'food':food,"cate":cate,"qty":qty})
 
 # Add To Cart
 @login_required(login_url='Login') 
@@ -162,6 +177,8 @@ def Cart(request):
         print( request.session['cart'])
     return redirect('FoodMenu')
 
+
+
 @login_required(login_url='Login')     
 def AddCart(request):
     ids = list(request.session.get('cart'))
@@ -179,6 +196,19 @@ def FoodOrder(request,food_id):
         difference = (food.Food_Price)*((food.Discount_In_Percentage)/(100))
         new_food_price = int(food.Food_Price - difference)
 
+    qty = 1
+    if(request.method =='POST'):
+        value = request.POST['qty']
+        remove = request.POST.get('remove')
+        value = int(value)
+        if(qty>0):
+            if(remove):
+                qty = value-1
+            else:
+                qty = value + 1
+        else:
+            qty = 1
+
     rating = Review.objects.filter(food_id = food_id)
     rate = Review.objects.filter(food_id= food_id).aggregate(Avg('rate'))
     num = Review.objects.filter(food_id= food_id).aggregate(Count('user'))
@@ -187,13 +217,54 @@ def FoodOrder(request,food_id):
     food.users = num["user__count"]
     food.Food_Avg_Rating = rate["rate__avg"]
     food.save()
-    return render(request,'Food_Order.html',{"food":food,"rating":rating,"Discount":discount,"new_food_price":new_food_price})
+    return render(request,'Food_Order.html',{"food":food,"rating":rating,"Discount":discount,"new_food_price":new_food_price,"qty":qty})
+
 
 
 @login_required(login_url='Login') 
-def Payment(request,food_id):
+def Payment(request,food_id,qty ):
     food = Food.objects.get(id = food_id)
     user = User.objects.get(id = request.user.id)
-    return render(request,"Payment.html", {"user":user,"food":food})
+    discount = False
+    difference =0
+    penilty = 0
+    new_food_price = food.Food_Price
+    if(food.Discount_In_Percentage>0):
+        discount = True
+        difference = int((food.Food_Price)*((food.Discount_In_Percentage)/(100)))
+        new_food_price = int(food.Food_Price - difference)
+    Total_price = new_food_price * int(qty)
+    Final_price = (Total_price) + (Total_price)*(0.01)
+    if request.method == 'POST':
+        Name = request.POST.get('Name')
+        Email = request.POST.get('Email')
+        Address = request.POST.get('Address')
+        City = request.POST.get('city')
+        State = request.POST.get('state')
+        Pincode = request.POST.get('pincode')
+        payment_method = request.POST.get('paymentmethod')
+        if(payment_method == "COD"):
+                ord = orders(user_id = user,food_id = food_id,date_time = timezone.now(),order_address = Address,state = State,city = City,pincode = Pincode,quantity = qty,deliver_status = False)
+                ord.save()
+                bill = Bill(order_no =ord.id,user = user,food  = food_id,payment_status = False,discount = difference,tex = 10,penilty = penilty,total_amount = Final_price)
+                bill.save()
 
+    return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price})
 
+#MyOrders Page
+def MyOrders(request):
+    return render(request,'MyOrders.html')
+
+# Sending Conformation email
+
+def success(request):
+    user = User.objects.get(id = request.user.id)
+    template = render_to_string('email_template.html',{'user':user})
+    email  = EmailMessage(
+        'Thanks for purhcasing the food',
+        template,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+    )
+    email.fail_silently = False
+    email.send()
