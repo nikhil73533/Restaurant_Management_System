@@ -1,4 +1,5 @@
 {%load static %}
+{%load cart %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -105,17 +106,17 @@
       <div class="col-25">
           <div class="container">
               <h4>{{food.Food_Name}} <span class="price" style="color:black"> <b>&#8377; {{food.Food_Price}}</b></span></h4>
-              
-              {%if Discount %}
+              {% if Discount %}
               <p><a href="#">Discount</a> <span class="price">&#8377; {{difference}}({{food.Discount_In_Percentage}}%)</span></p>
-              {% else %}
-              <p><a href="#">Discount</a> <span class="price">&#8377; 0</span></p>
-              {%endif%}
+              {% endif %}
               <p><a href="#">{{new_food_price}} x {{qty}}</a> <span class="price">&#8377; {{Total_price}} </span></p>
-              <p><a href="#">CGST</a> <span class="price">$1400</span></p>
-              <p><a href="#">SGST</a> <span class="price">$1200</span></p>
+              {% if user.penilty|is_penilty:request.session.cart  %}
+                <p><a href="#">Penilty</a><span class="price">{{user.penilty}} %</span></p>
+            {% endif %} 
+              <p><a href="#">CGST</a> <span class="price">{{CGST}}%</span></p>
+              <p><a href="#">SGST</a> <span class="price">{{SGST}}%</span></p>
               <hr>
-              <p>Total <span class="price" style="color:black"><b>$12600</b></span></p>
+              <p>Total <span class="price" style="color:black"><b>&#8377; {{final_price}}</b></span></p>
           </div>
       </div>
   </div>
@@ -124,7 +125,7 @@
   <ul>
       <li><a href="/">Home</a></li>
       <li><a href="{%url 'AddCart'%}">Cart</a><span class = "badge badge-info">{{request.session.cart.keys|length}}</span>
-      <li><a href="{%url 'MyOrders'%}">Orders</a></li>
+            <li><a href="{%url 'MyOrders'%}">Orders</a><span class = "badge badge-info">0</span></li>
       <li><a href="{%url 'FoodMenu'%}">Menu</a>
       </li>
       <li><a href="#">Contact</a></li>

@@ -103,7 +103,7 @@
     <ul>
         <li><a href="/">Home</a></li>
         <li><a href="#">About</a></li>
-         <li><a href="{%url 'MyOrders'%}">Orders</a><span class = "badge badge-info">0</span></li>
+         <li><a href="{%url 'MyOrders'%}">Orders</a><span class = "badge badge-info">{{ord|length}}</span></li>
         <li><a href="{%url 'AddCart'%}">Cart</a><span class = "badge badge-info">{{request.session.cart.keys|length}}</span>
         </li>
         <li><a href="#">Contact</a></li>

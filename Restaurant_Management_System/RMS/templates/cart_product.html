@@ -72,7 +72,6 @@
                 </thead>
                 <tbody>
                     {%for food_items in product%}
-
                     <tr>
                         <td>
                             <div class="main">
@@ -102,8 +101,33 @@
                             <h6>&#8377; {{food_items|price_total:request.session.cart}}</h6>
                         </td>
                     </tr>
+
+                    <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
                     {%endfor%}
-                    <!----->
                 </tbody>
             </table>
         </div>
@@ -116,14 +140,19 @@
             <li class="subtotal">subtotal
                 <span>&#8377; {{product|Total_Price:request.session.cart}}</span>
             </li>
+            {% if user.penilty|is_penilty:request.session.cart  %}
+             <li class="subtotal">Penilty
+                <span>&#8377; {{user.penilty}}%</span>
+            </li>
+            {% endif %} 
             <li class="subtotal">SGST
-                <span>&#8377;12 </span>
+                <span>{{SGST}}%</span>
             </li>
             <li class="subtotal">CGST
-                <span>&#8377; 13</span>
+                <span>{{CGST}}%</span>
             </li>
-            <li class="cart-total">Total
-            <span>$60.00</span></li>
+             {% comment %} <li class="cart-total">Total
+            <span>&#8377; {{ product|final_amount:request.session.cart }}</span></li> {% endcomment %}
         </ul>
         <a href="#"class="proceed-btn">Proceed to Checkout</a>
     </div>

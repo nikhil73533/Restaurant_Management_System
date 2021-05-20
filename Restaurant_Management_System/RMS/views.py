@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
+import math
 from django.utils import timezone
 from .models import Food,Review, orders, Bill
 from django.contrib.auth.decorators import login_required
@@ -125,6 +126,10 @@ def Logout(request):
 
 # Food Manue
 def FoodMenu(request):
+    user = User.objects.get(id = request.user.id)
+    ord = orders.objects.filter(user = user)
+    ord = list(ord)
+    print(ord)
     qty = 0
     cart = request.session.get('cart')
     if not cart:
@@ -149,7 +154,7 @@ def FoodMenu(request):
         for i in filter:
             cate.append(i.Food_Type)
         cate= set(cate)
-    return render(request,'Food_menu.html',{'food':food,"cate":cate,"qty":qty})
+    return render(request,'Food_menu.html',{'food':food,"cate":cate,"qty":qty,"ord":ord})
 
 # Add To Cart
 @login_required(login_url='Login') 
@@ -183,7 +188,10 @@ def Cart(request):
 def AddCart(request):
     ids = list(request.session.get('cart'))
     product = Food.objects.filter(id__in = ids)
-    return   render(request,'cart_product.html',{'product':product})
+    user = User.objects.get(id = request.user.id)
+    SGST = 5
+    CGST  = 5
+    return   render(request,'cart_product.html',{'product':product,"user":user,"SGST":SGST,'CGST':CGST})
 
 #Order Page
 @login_required(login_url='Login') 
@@ -227,14 +235,22 @@ def Payment(request,food_id,qty ):
     user = User.objects.get(id = request.user.id)
     discount = False
     difference =0
-    penilty = 0
+    penilty = user.penilty
+    CGST = 5
+    SGST = 5
     new_food_price = food.Food_Price
+    # Adding Discount
     if(food.Discount_In_Percentage>0):
         discount = True
         difference = int((food.Food_Price)*((food.Discount_In_Percentage)/(100)))
         new_food_price = int(food.Food_Price - difference)
+    
     Total_price = new_food_price * int(qty)
-    Final_price = (Total_price) + (Total_price)*(0.01)
+    # Adding penilty
+    price_with_penilty= int(Total_price + Total_price*(penilty*0.01))
+    # Adding Tex
+    Final_price = price_with_penilty + (price_with_penilty)*(0.1)
+    Final_price = math.floor(Final_price)
     if request.method == 'POST':
         Name = request.POST.get('Name')
         Email = request.POST.get('Email')
@@ -244,16 +260,32 @@ def Payment(request,food_id,qty ):
         Pincode = request.POST.get('pincode')
         payment_method = request.POST.get('paymentmethod')
         if(payment_method == "COD"):
-                ord = orders(user_id = user,food_id = food_id,date_time = timezone.now(),order_address = Address,state = State,city = City,pincode = Pincode,quantity = qty,deliver_status = False)
+                ord = orders(user = user,food = food,date_time = timezone.now(),order_address = Address,state = State,city = City,pincode = Pincode,quantity = qty,deliver_status = False,total_amount = Final_price)
                 ord.save()
-                bill = Bill(order_no =ord.id,user = user,food  = food_id,payment_status = False,discount = difference,tex = 10,penilty = penilty,total_amount = Final_price)
+                bill = Bill(order_no =ord,user = user,food  = food,payment_status = False,discount = difference,tex = 10, penilty = penilty,total_amount = Final_price)
                 bill.save()
-
-    return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price})
+                user.penilty = 0
+                user.save()
+    return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price,"user":user,'CGST':CGST,'SGST':SGST})
 
 #MyOrders Page
 def MyOrders(request):
-    return render(request,'MyOrders.html')
+    user = User.objects.get(id = request.user.id)
+    order = orders.objects.filter(user_id =user).order_by('-date_time')
+    bills = Bill.objects.filter(user = user)
+    if(request.method == 'POST'):
+        if(request.POST.get('recive')):
+            oddr = request.POST.get('order_no')
+            odr = orders.objects.get(id = oddr)
+            odr.delete()
+        else:
+            user.penilty = 10
+            user.save()
+            oddr = request.POST.get('order_no')
+            odr = orders.objects.get(id = oddr)
+            odr.delete()
+    
+    return render(request,'MyOrders.html',{'orders':order,"bills":bills})
 
 # Sending Conformation email
 
@@ -268,3 +300,11 @@ def success(request):
     )
     email.fail_silently = False
     email.send()
+
+
+# Handeling Time  and penilties
+def HandelTime(request):
+    if(request.method=='GET'):
+        date_time = request.GET.get('time')
+        print(date_time)
+        redirect('MyOrders')

@@ -81,6 +81,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default = True)
     is_staff = models.BooleanField(default = False)
     is_superuser = models.BooleanField(default = False)
+    penilty = models.PositiveIntegerField(null = True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ['Address','phone','Name']
 
@@ -98,8 +99,8 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
 # order model
 class orders(models.Model):
-    user_id = models.ForeignKey(MyUser,default=None,on_delete = models.CASCADE)
-    food_id = models.ForeignKey(Food,default=None, on_delete = models.CASCADE)
+    user = models.ForeignKey(MyUser,default=None,on_delete = models.CASCADE)
+    food = models.ForeignKey(Food,default=None, on_delete = models.CASCADE)
     date_time = models.DateTimeField('date published')
     order_address = models.CharField(max_length=5000)
     state = models.CharField(max_length=5000,null=True)
@@ -107,8 +108,10 @@ class orders(models.Model):
     pincode = models.CharField(max_length=5000,null=True)
     quantity = models.IntegerField()
     deliver_status = models.BooleanField(default=False)
-    penilty = models.PositiveIntegerField(null = True)
+    total_amount = models.PositiveIntegerField(null = True)
 
+    def __str__(self):
+        return self.user.Name
 
 #Bill Model
 class Bill(models.Model):
@@ -120,6 +123,9 @@ class Bill(models.Model):
     tex = models.PositiveIntegerField()
     penilty = models.PositiveIntegerField(null = True)
     total_amount = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.user.Name
 # FeedBack Model
 class Review(models.Model):
     user = models.ForeignKey(MyUser,default=None,on_delete = models.CASCADE)

@@ -16,6 +16,7 @@ urlpatterns = [
     path('payment/<int:food_id>/<int:qty>/', views.Payment,name = "Payment"),
     path('add_cart', views.AddCart,name = "AddCart"),
     path('my_orders', views.MyOrders,name = "MyOrders"),
+    path('handel_time', views.HandelTime,name = "HandelTime"),
      #Password Reset Urls
 
     path('reset_password/',PasswordResetView.as_view(template_name = "user/Password_email.html"),name = 'reset_password'),

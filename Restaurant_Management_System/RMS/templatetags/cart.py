@@ -16,7 +16,13 @@ def discount_calculater(product,cart):
     difference = (product.Food_Price)*((product.Discount_In_Percentage)/(100))
     return int(product.Food_Price - difference)
 
-
+# Penilty functions
+@register.filter(name="is_penilty")
+def it_penilty(product,cart):
+    product = int(product)
+    if(product>0):
+        return True
+    return False
 
 # Cart filters
 
@@ -50,4 +56,10 @@ def Total_Price(product,cart):
     for p in product:
         sum+=price_total(p,cart)
     return sum
+
+
+def final_amount(total_amount,cart):
+    pass
+
+
 
