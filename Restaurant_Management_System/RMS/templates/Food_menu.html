@@ -25,7 +25,7 @@
     <!-- Menu area start -->
     {%for food_items in food%}
     <div class="food-items">
-        <img src="/media/{{food_items.food_pic}}" alt="food_pic">
+        <img src="/media/{{food_items.food_pic}}"  onClick="document.location='{%url 'FoodOrder' food_items.id  %}'"alt="food_pic">
         <form action="food_order/{{food_items.id}}/">
         </form>
     <div class="details">
@@ -35,7 +35,8 @@
             <form action="food_order/{{food_items.id}}/" method = "POST">
             {%csrf_token%}
             <input type="text" name = "qty" value = {{qty}} hidden>
-                <input type="submit" value = {{food_items.Food_Name}}>
+            <label for="submit{{food_items.Food_Name}}">{{food_items.Food_Name}}</label>
+                <input type="submit" id = "submit{{food_items.Food_Name}}" hidden>
             </form>
             </h5>
              {%if food_items|is_discount:request.session.cart %}

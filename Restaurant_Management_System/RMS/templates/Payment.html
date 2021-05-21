@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-      
+     
     <link href='https://www.soengsouy.com/favicon.ico' rel='icon' type='image/x-icon'/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -58,47 +58,24 @@
                           </div>
                           <div class="col-35">
                               <div class="col-10">
-                                  <input type="radio" class="cname" autocomplete = "off" name="paymentmethod" value="COD" checked>
-                                  <label for="cname">Cash On Delivery</label>
+                                  <input type="radio" class="cname" id = "COD" autocomplete = "off" name="paymentmethod" value="COD" checked>
+                                  <label for="COD">Cash On Delivery</label>
                                 </div>
                                 <div class="col-10">
-                                    <input type="radio" class="cname" autocomplete = "off" name="paymentmethod" value="Card" >
-                                    <label for="ccnum">By Card</label>
+                                    <input type="radio" id = "CARD" class="cname" autocomplete = "off" name="paymentmethod" value="Card" >
+                                    <label for="CARD">By Card</label>
                                    
                                 </div>
                                 <div class="col-10">
-                                    <input type="radio" class="cname" autocomplete = "off"  name="paymentmethod" value = "UPI" >
-                                    <label for="expmonth">By UPI</label>
+                                    <input type="radio" id = "UPI" class="cname" autocomplete = "off"  name="paymentmethod" value = "UPI" >
+                                    <label for="UPI">By UPI</label>
                                 </div>
                             </div>
                               <div class="row">
                           </div>
                       </div>
                   </div>
-                  
-  <!-- pop button area start -->
-  <div class="popup center">
-    <div class="icon">
-      <i class="fa fa-check"></i>
-    </div>
-    <div class="title">
-      Success!!
-    </div>
-    <div class="description">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias nihil provident voluptatem nulla placeat
-    </div>
-    <div class="dismiss-btn">
-      <button id="dismiss-popup-btn">
-        Dismiss
-      </button>
-    </div>
-  </div>
-  <div class="btn">
-    <button id="open-popup-btn" class = "btn">
-      Buy Now
-    </button>
-  </div>
-  <!-- pop button area end -->
+                <input type="submit" onclick= slwal() value="Continue to checkout" class="btn">
 
               </form>
           </div>
@@ -111,7 +88,7 @@
               {% endif %}
               <p><a href="#">{{new_food_price}} x {{qty}}</a> <span class="price">&#8377; {{Total_price}} </span></p>
               {% if user.penilty|is_penilty:request.session.cart  %}
-                <p><a href="#">Penilty</a><span class="price">{{user.penilty}} %</span></p>
+                <p><a href="#">Penilty</a><span class="price">&#8377; {{user.penilty}} </span></p>
             {% endif %} 
               <p><a href="#">CGST</a> <span class="price">{{CGST}}%</span></p>
               <p><a href="#">SGST</a> <span class="price">{{SGST}}%</span></p>
@@ -120,12 +97,14 @@
           </div>
       </div>
   </div>
+
+  
   <!-- nav area start -->
 <div class="nav">
   <ul>
       <li><a href="/">Home</a></li>
       <li><a href="{%url 'AddCart'%}">Cart</a><span class = "badge badge-info">{{request.session.cart.keys|length}}</span>
-            <li><a href="{%url 'MyOrders'%}">Orders</a><span class = "badge badge-info">0</span></li>
+            <li><a href="{%url 'MyOrders'%}">Orders</a><span class = "badge badge-info">{{odr|length}}</span></li>
       <li><a href="{%url 'FoodMenu'%}">Menu</a>
       </li>
       <li><a href="#">Contact</a></li>
@@ -133,6 +112,7 @@
 </div>
 <!-- nav area end -->
   <!-- script validate js -->
+   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script>
       $('#validate').validate({
           roles: {
@@ -185,15 +165,14 @@
               cvv:"Please input cvv*",
           },
       });
-
-      // Pop button java scripts
-      document.getElementById("open-popup-btn").addEventListener("click",function(){
-  document.getElementsByClassName("popup")[0].classList.add("active");
-});
- 
-document.getElementById("dismiss-popup-btn").addEventListener("click",function(){
-  document.getElementsByClassName("popup")[0].classList.remove("active");
-});
+    //Swit alert
+    
+    
+   
+  
+  </script>
+  <script>
+      swal("Thank You!", 'Your order have done successfully!', "success")
   </script>
 </body>
 </html>

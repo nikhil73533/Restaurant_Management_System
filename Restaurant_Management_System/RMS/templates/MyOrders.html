@@ -84,15 +84,18 @@
               {% endif %}
               </td>
             <td>
-              <!-- <form action="{{request.path}}" method="POST">{% csrf_token %}
-                <input type="text" value={{order.id}} name="order_no" hidden>
-                <button type="button" data-target="#mymodel_1" data-toggle="modal" name="cancle" value="Cancle"
-                  class="btn btn-primary">Cancle Order</button>
-              </form> -->
+              
 
             {%if not order.deliver_status %}
-            <button type="button" data-target="#mymodel_1" data-toggle="modal" class="btn btn-primary">Cancle</button>
-          </a>
+              {% if order|is_it_penilty %}
+                  <button type="button" data-target="#mymodel_1" data-toggle="modal" class="btn btn-primary">Cancle</button>
+                {% else %}
+                <form action="{{request.path}}" method="POST">{% csrf_token %}
+                <input type="text" value={{order.id}} name="order_no" hidden>
+                <button type="submit"   name="Cancle_with_no_penilty" value="Cancle_with_no_penilty"
+                  class="btn btn-primary">Order Cancle</button>
+                </form> 
+              {% endif %}
             {% endif %}
               
                

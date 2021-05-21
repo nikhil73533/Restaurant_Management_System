@@ -1,4 +1,6 @@
+from datetime import date
 from django import template
+from django.utils import timezone
 register = template.Library()
 
 
@@ -14,14 +16,16 @@ def is_discount(product,cart):
 @register.filter(name = "discount_calculater")
 def discount_calculater(product,cart):
     difference = (product.Food_Price)*((product.Discount_In_Percentage)/(100))
-    return int(product.Food_Price - difference)
+    return (product.Food_Price - difference)
 
 # Penilty functions
 @register.filter(name="is_penilty")
 def it_penilty(product,cart):
-    product = int(product)
-    if(product>0):
-        return True
+    if(product):
+        product = int(product)
+        if(product>0):
+            return True
+        return False
     return False
 
 # Cart filters
@@ -51,15 +55,31 @@ def price_total(product,cart):
     return food_price* cart_count(product,cart) 
 
 @register.filter(name="Total_Price")
-def Total_Price(product,cart):
+def Total_Price(lis,product):
     sum = 0
     for p in product:
-        sum+=price_total(p,cart)
-    return sum
+        sum+=final_amount(lis,p)
+    return round(sum,4)
 
+@register.filter(name="final_amount")
+def final_amount(lis,food_items):
+    amount = price_total(food_items,lis[3])
+    if(lis[2]):   
+        return round(amount + lis[2] + amount*(lis[0]*0.01) + amount*(lis[1]*0.01),4)
+    return round(amount + 0 + amount*(lis[0]*0.01) + amount*(lis[1]*0.01),4)
 
-def final_amount(total_amount,cart):
-    pass
-
-
-
+@register.filter(name="is_empty")
+def is_empty(product,cart):
+    if(cart=={}):
+        return False
+    return True
+# Penilty 
+@register.filter(name="is_it_penilty")
+def is_it_penilty(order):
+    current_time = timezone.now()
+    time = current_time - order.date_time
+    time = time.total_seconds()
+    print(time)
+    if(time<300):
+        return False
+    return True

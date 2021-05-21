@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
-import math
+from .templatetags.cart import final_amount, discount_calculater
 from django.utils import timezone
 from .models import Food,Review, orders, Bill
 from django.contrib.auth.decorators import login_required
@@ -27,9 +27,7 @@ def Profile(request):
     context = {}
     data = User.objects.get(id = request.user.id)
     context["data"] = data
-    print("ok0")
     if(request.method == 'POST'):
-        print("ok3")
         Name = request.POST['name']
         Email = request.POST['email']
         Address = request.POST['address']
@@ -124,12 +122,12 @@ def Logout(request):
     return redirect('/')
     
 
-# Food Manue
+# Food Menu
+@login_required(login_url='Login')
 def FoodMenu(request):
     user = User.objects.get(id = request.user.id)
     ord = orders.objects.filter(user = user)
     ord = list(ord)
-    print(ord)
     qty = 0
     cart = request.session.get('cart')
     if not cart:
@@ -179,7 +177,6 @@ def Cart(request):
             cart = {}
             cart[food] = 1
         request.session['cart'] = cart
-        print( request.session['cart'])
     return redirect('FoodMenu')
 
 
@@ -189,9 +186,34 @@ def AddCart(request):
     ids = list(request.session.get('cart'))
     product = Food.objects.filter(id__in = ids)
     user = User.objects.get(id = request.user.id)
+    odr = orders.objects.filter(user = user)
     SGST = 5
     CGST  = 5
-    return   render(request,'cart_product.html',{'product':product,"user":user,"SGST":SGST,'CGST':CGST})
+    penilty = user.penilty
+    cart = request.session.get('cart')
+    lis = [SGST,CGST,penilty,cart]
+    if(request.method=='POST'):
+        Address = request.POST.get('Address')
+        City = request.POST.get('city')
+        State = request.POST.get('state')
+        Pincode = request.POST.get('pincode')
+        payment_method = request.POST.get('paymentmethod')
+        if(payment_method=='COD'):
+            print("ok")
+            for p in product:
+                Amount = final_amount(lis,p)
+                discount_amount = discount_calculater(p,cart)
+                ord = orders(user = user,food = p,date_time = timezone.now(),state = State,city = City,order_address = Address,pincode = Pincode,quantity = len(ids),deliver_status = False,total_amount =Amount )
+                ord.save()
+                bill = Bill(order_no = ord,user = user,food = p,payment_status =False,discount = discount_amount,tex = 10,penilty = penilty,total_amount = Amount)
+                bill.save()
+                request.session['cart'] = {}
+                user.penilty = 0
+                user.save()
+                print(request.session['cart'])
+                success(request)
+                return redirect('AddCart')
+    return  render(request,'cart_product.html',{'product':product,"order":odr, "user":user,'TEX':CGST + SGST,"lis":lis})
 
 #Order Page
 @login_required(login_url='Login') 
@@ -199,6 +221,9 @@ def FoodOrder(request,food_id):
     discount = False
     food = Food.objects.get(id = food_id)
     new_food_price = food.Food_Price
+    user = User.objects.get(id = request.user.id)
+    ord = orders.objects.filter(user = user)
+    ord = list(ord)
     if(food.Discount_In_Percentage>0):
         discount = True
         difference = (food.Food_Price)*((food.Discount_In_Percentage)/(100))
@@ -225,7 +250,7 @@ def FoodOrder(request,food_id):
     food.users = num["user__count"]
     food.Food_Avg_Rating = rate["rate__avg"]
     food.save()
-    return render(request,'Food_Order.html',{"food":food,"rating":rating,"Discount":discount,"new_food_price":new_food_price,"qty":qty})
+    return render(request,'Food_Order.html',{"food":food,"rating":rating,"Discount":discount,"new_food_price":new_food_price,"qty":qty,"ord":ord})
 
 
 
@@ -242,18 +267,18 @@ def Payment(request,food_id,qty ):
     # Adding Discount
     if(food.Discount_In_Percentage>0):
         discount = True
-        difference = int((food.Food_Price)*((food.Discount_In_Percentage)/(100)))
-        new_food_price = int(food.Food_Price - difference)
+        difference = (food.Food_Price)*((food.Discount_In_Percentage)/(100))
+        new_food_price = (food.Food_Price - difference)
     
     Total_price = new_food_price * int(qty)
-    # Adding penilty
-    price_with_penilty= int(Total_price + Total_price*(penilty*0.01))
-    # Adding Tex
-    Final_price = price_with_penilty + (price_with_penilty)*(0.1)
-    Final_price = math.floor(Final_price)
+    # Final price
+    if(penilty):
+        Final_price = round(Total_price + penilty + Total_price*(CGST*0.01) + Total_price*(SGST*0.01),4)
+    Final_price = round(Total_price + 0 + Total_price*(CGST*0.01) + Total_price*(SGST*0.01),4)
+    message = ""
+    #Order count 
+    odr = orders.objects.filter(user = user)
     if request.method == 'POST':
-        Name = request.POST.get('Name')
-        Email = request.POST.get('Email')
         Address = request.POST.get('Address')
         City = request.POST.get('city')
         State = request.POST.get('state')
@@ -266,41 +291,49 @@ def Payment(request,food_id,qty ):
                 bill.save()
                 user.penilty = 0
                 user.save()
-    return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price,"user":user,'CGST':CGST,'SGST':SGST})
+                success(request)
+    return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price,"user":user,'odr':odr,'CGST':CGST,'SGST':SGST})
 
 #MyOrders Page
+@login_required(login_url='Login')
 def MyOrders(request):
     user = User.objects.get(id = request.user.id)
     order = orders.objects.filter(user_id =user).order_by('-date_time')
     bills = Bill.objects.filter(user = user)
+    lis = [request.session.get('cart')]
     if(request.method == 'POST'):
-        if(request.POST.get('recive')):
-            oddr = request.POST.get('order_no')
-            odr = orders.objects.get(id = oddr)
-            odr.delete()
+        if(request.POST.get('cancle')):
+                current_time = timezone.now()
+                oddr = request.POST.get('order_no')
+                odr = orders.objects.get(id = oddr)
+                user.penilty = (odr.total_amount)*0.1
+                user.save()
+                odr.delete()
         else:
-            user.penilty = 10
-            user.save()
-            oddr = request.POST.get('order_no')
-            odr = orders.objects.get(id = oddr)
-            odr.delete()
-    
+                print("okkk2")
+                oddr = request.POST.get('order_no')
+                odr = orders.objects.get(id = oddr)
+                user.penilty = 0
+                user.save()
+                odr.delete()
+               
     return render(request,'MyOrders.html',{'orders':order,"bills":bills})
 
 # Sending Conformation email
-
 def success(request):
     user = User.objects.get(id = request.user.id)
-    template = render_to_string('email_template.html',{'user':user})
+    template = render_to_string('email_templates.html',{'user':user})
+    print("started")
     email  = EmailMessage(
         'Thanks for purhcasing the food',
         template,
         settings.EMAIL_HOST_USER,
         [user.email],
     )
+    print("progress")
     email.fail_silently = False
     email.send()
-
+    print("success")
 
 # Handeling Time  and penilties
 def HandelTime(request):

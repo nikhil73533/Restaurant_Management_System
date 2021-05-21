@@ -32,10 +32,10 @@
 <!-- Header area end -->
 <!-- main section area start -->
     <div class="main">
-        <button ><a href="user/menu" >Order Now</a></button>
+        <button  class = "button" onClick="document.location='{% url 'FoodMenu' %}'" ><span>Order Now</span></button>
     </div>
     <div class="main_2">
-        <button><a href="#" >Book Table</a></button>
+        <button class = "button"><span>Book Table</span></button>
     </div>
 <!-- main section area end -->
 <!-- slider area start -->
@@ -49,7 +49,7 @@
             <img src="../static/user.png" alt="profile pic" class = "profile_img">
         {%endif%}
         <h4>{{user.Name}}</h4>
-        <button onClick="document.location='account/profile'">
+        <button class = "button_edit" onClick="document.location='account/profile'">
     Edit profile
 </button>
         <h4></h4>

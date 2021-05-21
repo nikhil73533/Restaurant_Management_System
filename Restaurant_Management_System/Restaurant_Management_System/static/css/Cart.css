@@ -6,6 +6,8 @@
 body{
     background-color: #f3f3f3;
     font-family: sans-serif;
+    background: url(../static/bg1.jpg) top center;
+    background-size: cover;
 }
 /* header area */
 .menu{

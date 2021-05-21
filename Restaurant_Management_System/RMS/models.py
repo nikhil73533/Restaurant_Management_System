@@ -108,7 +108,7 @@ class orders(models.Model):
     pincode = models.CharField(max_length=5000,null=True)
     quantity = models.IntegerField()
     deliver_status = models.BooleanField(default=False)
-    total_amount = models.PositiveIntegerField(null = True)
+    total_amount = models.PositiveIntegerField(null = True,default=0)
 
     def __str__(self):
         return self.user.Name

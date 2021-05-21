@@ -9,6 +9,17 @@
     <link rel="stylesheet"href="main.css">
     <link rel="stylesheet"href="cart.css">
     <script src="https://kit.fontawesome.com/332a215f17.js" crossorigin="anonymous"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -38,7 +49,7 @@
     <ul>
         <li><a href="/">Home</a></li>
         <li><a href="#">About</a></li>
-         <li><a href="{%url 'MyOrders'%}">Orders</a><span class = "badge badge-info">0</span></li>
+        <li><a href="{%url 'MyOrders'%}">Orders</a><span class = "badge badge-info">{{order|length}}</span></li>
         <li><a href="{%url 'FoodMenu'%}">Menu</a>
         </li>
         <li><a href="#">Contact</a></li>
@@ -49,10 +60,10 @@
  <!---Hero Section-->
  <section id="hero">
     <div class="hero-container">
-        <div class="hero-logo">
-            <h1 class="font-weight-bold">Cart Products</h1>
-            
-        </div>
+    <img src="../static/bg1.jpg"  height="650" width="100%"  alt="">
+    <div class="hero-logo">
+      <h1 class="font-weight-bold">Cart Products</h1>
+  </div>
         </div>
 </section>
 <!---End of Hero Section-->
@@ -67,6 +78,10 @@
                         <th scope="col"class="text-white">Product</th>
                         <th scope="col"class="text-white">Price</th>
                         <th scope="col"class="text-white">Quantity</th>
+                        {% if user.penilty|is_penilty:request.session.cart %}
+                        <th scope="col"class="text-white">Panilty</th>
+                        {% endif %}
+                        <th scope="col"class="text-white">Tex(CGST+SGST)</th>
                         <th scope="col"class="text-white">Total</th>
                     </tr>
                 </thead>
@@ -97,36 +112,18 @@
                                <h6>{{food_items|cart_count:request.session.cart}} in cart</h6>
                             </div>
                         </td>
+                        {% if user.penilty|is_penilty:request.session.cart %}
                         <td>
-                            <h6>&#8377; {{food_items|price_total:request.session.cart}}</h6>
+                          <h6>&#8377; {{user.penilty}}</h6>
+                      </td>
+                      {%endif%}
+                      <td>
+                        <h6>({{TEX}}%)</h6>
+                    </td>
+                        <td>
+                            <h6>&#8377; {{lis|final_amount:food_items}}</h6>
                         </td>
                     </tr>
-
-                    <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-  Launch demo modal
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
                     {%endfor%}
                 </tbody>
             </table>
@@ -134,31 +131,123 @@
         </div>
     </div>
 </section>
+
+<!-- for cancle button -->
+{% if product|is_empty:request.session.cart %}
+<div class="modal" id="mymodel_1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="text-center text-danger ">Check Out Form</h3>
+        </div>
+        <div class="modal-body">
+         <form action="{{request.path}}" method="POST">
+             {%csrf_token%}
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="inputEmail4">Name</label>
+                    <input type="text" name="Name" class="form-control" id="inputEmail4"  value = {{user.Name}} placeholder="Name" disabled>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="inputPassword4">Email</label>
+                    <input type="email" name="Email" class="form-control" id="inputPassword4"value = {{user.email}} placeholder="Email" disabled>
+                  </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputAddress">Phone</label>
+                    <input type="text" name="Phone" class="form-control" value = {{user.phone}}  id="inputPhone" placeholder="1234-567-890" disabled>
+                  </div>
+                <div class="form-group">
+                  <label for="inputAddress">Address</label>
+                  <input type="text"  name="Address" class="form-control"value = {{user.Address}} id="inputAddress" placeholder="Address">
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="inputCity">City</label>
+                    <input type="text" name="City" class="form-control"value = {{user.city}} id="inputCity" placeholder="City">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="inputState">State</label>
+                    <input type="text" name="State" class="form-control"value = {{user.state}} id="inputState" placeholder="State">
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label for="inputZip">pincode</label>
+                    <input type="text" name="Pincode"  class="form-control"value = {{user.pincode}} id="inputZip">
+                  </div>
+                  <hr>
+                  <label for="inputAddress">Payment Method</label>
+                </div>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input class="form-check-input" value="UPI" type="radio"name = "paymentmethod" id="gridCheck1" required>
+                    <label class="form-check-label" for="gridCheck1">
+                      UPI
+                    </label>
+                  </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                      <input class="form-check-input" value="CARD" type="radio" id="gridCheck2" name = "paymentmethod"r required >
+                      <label class="form-check-label" for="gridCheck2">
+                        BY CARD
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-check">
+                      <input class="form-check-input" value="COD" type="radio"name = "paymentmethod" id="gridCheck3" required>
+                      <label class="form-check-label" for="gridCheck3">
+                        CASH ON DELIVERY
+                      </label>
+                    </div>
+                  </div>
+                <button type="submit"  id = "submit" class="btn  float-right bgn-outline-info col-lg-6">Check Out</button>
+         </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  
+              <!-- for cancle button -->
+
+              <div class="modal" id="mymodel_1">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="text-center text-danger ">Empty Alert</h3>
+
+                    </div>
+                    <div class="modal-body">
+                      <p>The cart is Empty </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success text-center" name="cancle" value="Cancle">I aggree</button>
+                    
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- cancle area end -->
+
+{% endif %}
+  <!-- cancle area end -->
+
+
 <div class="col-lg-4 offset-lg-4">
     <div class="checkout">
         <ul>
-            <li class="subtotal">subtotal
-                <span>&#8377; {{product|Total_Price:request.session.cart}}</span>
-            </li>
-            {% if user.penilty|is_penilty:request.session.cart  %}
-             <li class="subtotal">Penilty
-                <span>&#8377; {{user.penilty}}%</span>
-            </li>
-            {% endif %} 
-            <li class="subtotal">SGST
-                <span>{{SGST}}%</span>
-            </li>
-            <li class="subtotal">CGST
-                <span>{{CGST}}%</span>
-            </li>
-             {% comment %} <li class="cart-total">Total
-            <span>&#8377; {{ product|final_amount:request.session.cart }}</span></li> {% endcomment %}
+            <li class="cart-total">Total
+            <span>&#8377; {{lis|Total_Price:product}}</span></li>
         </ul>
-        <a href="#"class="proceed-btn">Proceed to Checkout</a>
+        <button type="button" data-target="#mymodel_1" data-toggle="modal" class="proceed-btn">Proceed to Checkout</button>
+
     </div>
 </div>
 
-
+<script>
+  $('submit').click(swal("Thank You!", 'Your order have done successfully!', "success"))
+</script>
 
 </div>
 </body>
