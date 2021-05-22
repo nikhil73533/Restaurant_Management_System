@@ -34,4 +34,5 @@ urlpatterns = [
     path('user/',include('RMS.urls')),
     path('user/',include('RMS.urls')),
     path('user/',include('RMS.urls')),
+    path('user/',include('RMS.urls')),
 ] +  static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT) 

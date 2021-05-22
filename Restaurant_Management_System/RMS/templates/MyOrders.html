@@ -10,7 +10,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+  <link href='https://www.soengsouy.com/favicon.ico' rel='icon' type='image/x-icon'/>
   <!-- jQuery library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -31,7 +31,7 @@
 
     <div class="heading">
       <h1>KALASH DA DHABA</h1>
-      <h3>&mdash; MENU &mdash;</h3>
+      <h3>&mdash; MY ORDERS &mdash;</h3>
 
     </div>
   </div>
@@ -41,7 +41,8 @@
   <div class="nav">
     <ul>
       <li><a href="/">Home</a></li>
-      <li><a href="#">About</a></li>
+      <li><a href="{%url 'AddCart'%}">Cart</a><span class = "badge badge-info">{{request.session.cart.keys|length}}</span>
+
       <li><a href="{%url 'FoodMenu'%}">Menu</a>
       </li>
       <li><a href="#">Contact</a></li>
@@ -93,7 +94,7 @@
                 <form action="{{request.path}}" method="POST">{% csrf_token %}
                 <input type="text" value={{order.id}} name="order_no" hidden>
                 <button type="submit"   name="Cancle_with_no_penilty" value="Cancle_with_no_penilty"
-                  class="btn btn-primary">Order Cancle</button>
+                  class="btn btn-primary">Cancle</button>
                 </form> 
               {% endif %}
             {% endif %}
@@ -112,8 +113,9 @@
 
                     </div>
                     <div class="modal-body">
-                      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Modi aspernatur laboriosam facere
-                        nobis commodi at tempora voluptatum animi asperiores sint.</p>
+                      <p>This is warning about that you are cancel your order after  <strong>five minuets</strong> you have to pay panilty of <strong>10%</strong>
+                        for this order when you order next time
+                      </p>
                     </div>
                     <div class="modal-footer">
                       <form action="{{request.path}}" method='POST'>{% csrf_token %}
@@ -139,6 +141,13 @@
 
     </div>
   </div>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script>
+{% for msg in messages %}
+  swal("Thank You!", '{{msg}}', "success");
+{%endfor%}
+  </script>
+  
 </body>
 
 </html>

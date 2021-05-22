@@ -1,6 +1,7 @@
 from datetime import date
 from django import template
 from django.utils import timezone
+import math
 register = template.Library()
 
 
@@ -21,6 +22,7 @@ def discount_calculater(product,cart):
 # Penilty functions
 @register.filter(name="is_penilty")
 def it_penilty(product,cart):
+    product = math.ceil(product)
     if(product):
         product = int(product)
         if(product>0):
@@ -64,9 +66,19 @@ def Total_Price(lis,product):
 @register.filter(name="final_amount")
 def final_amount(lis,food_items):
     amount = price_total(food_items,lis[3])
-    if(lis[2]):   
-        return round(amount + lis[2] + amount*(lis[0]*0.01) + amount*(lis[1]*0.01),4)
-    return round(amount + 0 + amount*(lis[0]*0.01) + amount*(lis[1]*0.01),4)
+    if(lis[4][len(lis[4])-1].id==food_items.id):
+        amount = price_total(food_items,lis[3])
+        if(lis[2]):   
+            return round(amount + lis[2] + amount*(lis[0]*0.01) + amount*(lis[1]*0.01),4)
+    return round(amount + amount*(lis[0]*0.01) + amount*(lis[1]*0.01),4)
+
+@register.filter(name="first_count")
+def first_count(lis,food_items):
+    if(lis[4][len(lis[4])-1].id==food_items.id):
+       return False
+    return True
+    
+
 
 @register.filter(name="is_empty")
 def is_empty(product,cart):

@@ -1,9 +1,10 @@
 from django import template
 from django.contrib import messages
+import math
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
-from .templatetags.cart import final_amount, discount_calculater
+from .templatetags.cart import final_amount, discount_calculater,cart_count
 from django.utils import timezone
 from .models import Food,Review, orders, Bill
 from django.contrib.auth.decorators import login_required
@@ -67,9 +68,9 @@ def FeedBack(request,food_id):
         rating=  request.POST['rating']
         user_feedback = Review(user = user,food = food, content = comment, rate = rating)
         user_feedback.save()
-        return redirect('FoodMenu')
+        return redirect('FoodOrder',food_id = food_id)
     else:
-        return render(request, 'Food_Order.html',{'food': food}) 
+        return redirect('FoodOrder',food_id = food_id)
 
 
 #Registration and Login form 
@@ -96,6 +97,7 @@ def Register(request):
             else:
                 user  = User.objects.create_user(Name = Name,email = email,password = password,phone = phone_number,Address = address,city = city,state = state,pincode = pincode)
                 user.save()
+                messages.add_message(request,messages.SUCCESS,'You have registered successfully')
                 return render(request,'Login_Registration.html')
         else:
             messages.info(request,'Password Does Not Match')
@@ -113,6 +115,7 @@ def Login(request):
             auth.login(request,user)
             return redirect('/',user= 'user')
         else:
+            messages.info(request,'Login Faild...')
             return render(request,'Login_Registration.html')
     else:
         return render(request,'Login_Registration.html')
@@ -187,11 +190,12 @@ def AddCart(request):
     product = Food.objects.filter(id__in = ids)
     user = User.objects.get(id = request.user.id)
     odr = orders.objects.filter(user = user)
+    
     SGST = 5
     CGST  = 5
     penilty = user.penilty
     cart = request.session.get('cart')
-    lis = [SGST,CGST,penilty,cart]
+    lis = [SGST,CGST,penilty,cart,product]
     if(request.method=='POST'):
         Address = request.POST.get('Address')
         City = request.POST.get('city')
@@ -200,19 +204,24 @@ def AddCart(request):
         payment_method = request.POST.get('paymentmethod')
         if(payment_method=='COD'):
             print("ok")
+            print(product)
+            count = 0
             for p in product:
-                Amount = final_amount(lis,p)
                 discount_amount = discount_calculater(p,cart)
-                ord = orders(user = user,food = p,date_time = timezone.now(),state = State,city = City,order_address = Address,pincode = Pincode,quantity = len(ids),deliver_status = False,total_amount =Amount )
+                Amount = final_amount(lis,p)
+                qty = cart_count(p,cart)
+                ord = orders(user = user,food = p,date_time = timezone.now(),state = State,city = City,order_address = Address,pincode = Pincode,quantity =qty ,deliver_status = False,total_amount =Amount )
                 ord.save()
                 bill = Bill(order_no = ord,user = user,food = p,payment_status =False,discount = discount_amount,tex = 10,penilty = penilty,total_amount = Amount)
                 bill.save()
-                request.session['cart'] = {}
-                user.penilty = 0
-                user.save()
-                print(request.session['cart'])
-                success(request)
-                return redirect('AddCart')
+                count+=1
+            success(request)
+            messages.add_message(request,messages.SUCCESS,'Your Order have done successfully!')
+            request.session['cart'] = {}
+            user.penilty = 0
+            user.save()
+            
+            return redirect('AddCart')
     return  render(request,'cart_product.html',{'product':product,"order":odr, "user":user,'TEX':CGST + SGST,"lis":lis})
 
 #Order Page
@@ -270,11 +279,13 @@ def Payment(request,food_id,qty ):
         difference = (food.Food_Price)*((food.Discount_In_Percentage)/(100))
         new_food_price = (food.Food_Price - difference)
     
-    Total_price = new_food_price * int(qty)
+    Total_price = round(new_food_price * int(qty),4)
     # Final price
+    print(penilty)
+    Final_price = round(Total_price + 0 + Total_price*(CGST*0.01) + Total_price*(SGST*0.01),4)
     if(penilty):
         Final_price = round(Total_price + penilty + Total_price*(CGST*0.01) + Total_price*(SGST*0.01),4)
-    Final_price = round(Total_price + 0 + Total_price*(CGST*0.01) + Total_price*(SGST*0.01),4)
+   
     message = ""
     #Order count 
     odr = orders.objects.filter(user = user)
@@ -291,6 +302,7 @@ def Payment(request,food_id,qty ):
                 bill.save()
                 user.penilty = 0
                 user.save()
+                messages.add_message(request,messages.SUCCESS,'Your Order have done successfully!')
                 success(request)
     return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price,"user":user,'odr':odr,'CGST':CGST,'SGST':SGST})
 
@@ -300,24 +312,34 @@ def MyOrders(request):
     user = User.objects.get(id = request.user.id)
     order = orders.objects.filter(user_id =user).order_by('-date_time')
     bills = Bill.objects.filter(user = user)
+    count = 0
     lis = [request.session.get('cart')]
     if(request.method == 'POST'):
+        count+=1
         if(request.POST.get('cancle')):
-                current_time = timezone.now()
+                print("ok")
                 oddr = request.POST.get('order_no')
                 odr = orders.objects.get(id = oddr)
-                user.penilty = (odr.total_amount)*0.1
+                print(odr)
+                print(odr.total_amount)
+                if(count<2):
+                    print("first")
+                    user.penilty = math.ceil((odr.total_amount)*0.1)
+                else:
+                    print("second")
+                    user.penilty = user.penilty + math.ceil((odr.total_amount)*0.2)
+                print(user.penilty)
                 user.save()
                 odr.delete()
+                messages.add_message(request,messages.SUCCESS,'Your Order have cancled successfully!')
+
         else:
                 print("okkk2")
                 oddr = request.POST.get('order_no')
                 odr = orders.objects.get(id = oddr)
-                user.penilty = 0
-                user.save()
                 odr.delete()
-               
-    return render(request,'MyOrders.html',{'orders':order,"bills":bills})
+                messages.add_message(request,messages.SUCCESS,'Your Order have cancled successfully!')
+    return render(request,'MyOrders.html',{'user':user,'orders':order,"bills":bills})
 
 # Sending Conformation email
 def success(request):
@@ -341,3 +363,8 @@ def HandelTime(request):
         date_time = request.GET.get('time')
         print(date_time)
         redirect('MyOrders')
+
+
+# Contact page
+def Contact(request):
+    return render(request,'index.html')

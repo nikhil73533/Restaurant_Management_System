@@ -81,7 +81,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default = True)
     is_staff = models.BooleanField(default = False)
     is_superuser = models.BooleanField(default = False)
-    penilty = models.PositiveIntegerField(null = True)
+    penilty = models.FloatField(null=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ['Address','phone','Name']
 
@@ -108,7 +108,7 @@ class orders(models.Model):
     pincode = models.CharField(max_length=5000,null=True)
     quantity = models.IntegerField()
     deliver_status = models.BooleanField(default=False)
-    total_amount = models.PositiveIntegerField(null = True,default=0)
+    total_amount = models.FloatField(null=True)
 
     def __str__(self):
         return self.user.Name
@@ -122,7 +122,7 @@ class Bill(models.Model):
     discount = models.PositiveIntegerField()
     tex = models.PositiveIntegerField()
     penilty = models.PositiveIntegerField(null = True)
-    total_amount = models.PositiveIntegerField()
+    total_amount = models.FloatField(null= True)
 
     def __str__(self):
         return self.user.Name
