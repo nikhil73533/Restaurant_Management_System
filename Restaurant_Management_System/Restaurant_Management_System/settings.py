@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -138,6 +139,10 @@ EMAIL_HOST_USER = 'ng7873301@gmail.com'
 EMAIL_HOST_PASSWORD = 'ashok1370'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+
+# # Activate Django-Heroku.
+# django_heroku.settings(locals())
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

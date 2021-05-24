@@ -29,23 +29,18 @@
   <!-- main section area start -->
   <div class="main_2">
     <img src="/media/{{user.profile_pic}}" height="100px" width="75px" alt="">
-    {%if status%}
-    <div class="alert">{{status}}</div>
-       {%endif%}
-   
-   
        <form action="profile" method = "POST" enctype="multipart/form-data" >{%csrf_token%}
 
         <div class="information">
           <h1>Edit profile</h1>
         </div>
-         <input type="text" value = {{user.Name}} autocomplete="on" placeholder=" User Name" name = "name">
+         <input type="text" value = "{{user.Name}}" autocomplete="on" placeholder=" User Name" name = "name">
          
          <input type="text" value = {{user.email}} placeholder="Email" name="email">
          
          <input type="text" value = {{user.phone}} placeholder="Phone Number" name = "phone">
        
-         <input type="text" value = {{user.Address}} placeholder="Local Address" name = "address">
+         <input type="text" value = "{{user.Address}}" placeholder="Local Address" name = "address">
          
          <input type="text" value = {{user.state}} placeholder="state" name = "state">
          
@@ -91,6 +86,13 @@
   </div>
   <!-- slider area end -->
   <div class="content"></div>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+{% for msg in messages %}
+  swal("Thank You!", '{{msg}}', "success");
+{%endfor%}
+
+</script>
 </body>
 </html>
 

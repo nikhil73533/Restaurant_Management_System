@@ -136,4 +136,17 @@ class Review(models.Model):
         return self.user.Name
 
 
+# Book Table 
+class Table(models.Model):
+    capicity = models.IntegerField()
+    def __str__(self):
+        return self.id
+
+
+class Booking(models.Model):
+    No_Of_Memebers = models.IntegerField()
+    Time_Date = models.DateField()
+
+    
+
     

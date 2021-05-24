@@ -162,7 +162,7 @@ body{
     display:table;
     width: 100%;
     height: 60vh;
-    background: url(https://www.soengsouy.com/favicon.ico) top center;
+    background: url(hero-bg.jpg) top center;
     background-size: cover;
 }
 @media (min-width: 1024px){

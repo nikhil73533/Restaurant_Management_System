@@ -78,7 +78,13 @@ def first_count(lis,food_items):
        return False
     return True
     
-
+# Is Equal
+@register.filter(name="is_equal")
+def is_equal(msg):
+    if("Successfully Booked" == msg):
+        return True
+    else:
+        return False
 
 @register.filter(name="is_empty")
 def is_empty(product,cart):

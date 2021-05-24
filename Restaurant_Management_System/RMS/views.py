@@ -1,12 +1,15 @@
 from django import template
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+import json
 import math
+from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
 from .templatetags.cart import final_amount, discount_calculater,cart_count
 from django.utils import timezone
-from .models import Food,Review, orders, Bill
+from .models import Food,Review, orders, Bill,Booking,Table
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Min, Avg, Count
 from django.shortcuts import get_object_or_404
@@ -14,13 +17,18 @@ from django.db.models import Q
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
+
+#Opening json file
+with open("config.json","r") as p:
+    parm = json.load(p)["parm"]
+
 # Home page Backand Coding
 def Home(request):
     return render(request,'Home.html')
  
 # Reset Password functions
 def reset_password(request):
-    return render(request , 'user/Reset_Password.html')
+    return render(request , 'user/Reset_Password.html',{"parm":parm})
 
 #profile page Backand Coding
 @login_required(login_url='/') 
@@ -52,11 +60,11 @@ def Profile(request):
             user.profile_pic = img
             user.save()
             print("ok1")
-        context["status"] = "Changes Saved Successfully"
+        messages.info(request,"Changes Saved Successfully")
         return render(request,'profile_page.html',context)
         
     else:
-       return render(request,'profile_page.html')
+       return render(request,'profile_page.html',{"parm":parm})
 
 # FeedBack
 @login_required(login_url='/') 
@@ -103,7 +111,7 @@ def Register(request):
             messages.info(request,'Password Does Not Match')
             return redirect('/')
     else:
-        return render(request,'Login_Registration.html')
+        return render(request,'Login_Registration.html',{"parm":parm})
 
 
 def Login(request):
@@ -155,7 +163,7 @@ def FoodMenu(request):
         for i in filter:
             cate.append(i.Food_Type)
         cate= set(cate)
-    return render(request,'Food_menu.html',{'food':food,"cate":cate,"qty":qty,"ord":ord})
+    return render(request,'Food_menu.html',{'food':food,"cate":cate,"qty":qty,"ord":ord,"parm": parm})
 
 # Add To Cart
 @login_required(login_url='Login') 
@@ -222,7 +230,7 @@ def AddCart(request):
             user.save()
             
             return redirect('AddCart')
-    return  render(request,'cart_product.html',{'product':product,"order":odr, "user":user,'TEX':CGST + SGST,"lis":lis})
+    return  render(request,'cart_product.html',{'product':product,"order":odr, "user":user,'TEX':CGST + SGST,"lis":lis,"parm":parm})
 
 #Order Page
 @login_required(login_url='Login') 
@@ -259,7 +267,7 @@ def FoodOrder(request,food_id):
     food.users = num["user__count"]
     food.Food_Avg_Rating = rate["rate__avg"]
     food.save()
-    return render(request,'Food_Order.html',{"food":food,"rating":rating,"Discount":discount,"new_food_price":new_food_price,"qty":qty,"ord":ord})
+    return render(request,'Food_Order.html',{"food":food,"rating":rating,"Discount":discount,"new_food_price":new_food_price,"qty":qty,"ord":ord,"parm":parm})
 
 
 
@@ -304,7 +312,10 @@ def Payment(request,food_id,qty ):
                 user.save()
                 messages.add_message(request,messages.SUCCESS,'Your Order have done successfully!')
                 success(request)
-    return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price,"user":user,'odr':odr,'CGST':CGST,'SGST':SGST})
+        elif(payment_method =="UPI" or payment_method =="CARD"):
+            messages.info(request,"This service is not avaible now")
+
+    return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price,"user":user,'odr':odr,'CGST':CGST,'SGST':SGST,"parm":parm})
 
 #MyOrders Page
 @login_required(login_url='Login')
@@ -339,7 +350,7 @@ def MyOrders(request):
                 odr = orders.objects.get(id = oddr)
                 odr.delete()
                 messages.add_message(request,messages.SUCCESS,'Your Order have cancled successfully!')
-    return render(request,'MyOrders.html',{'user':user,'orders':order,"bills":bills})
+    return render(request,'MyOrders.html',{'user':user,"parm":parm,'orders':order,"bills":bills})
 
 # Sending Conformation email
 def success(request):
@@ -355,16 +366,32 @@ def success(request):
     print("progress")
     email.fail_silently = False
     email.send()
-    print("success")
 
 # Handeling Time  and penilties
-def HandelTime(request):
-    if(request.method=='GET'):
-        date_time = request.GET.get('time')
-        print(date_time)
-        redirect('MyOrders')
-
+def HandelBooking(capicity):
+    Capicity = Table.objects.filter(capicity = capicity)
 
 # Contact page
 def Contact(request):
-    return render(request,'index.html')
+    return render(request,'index.html',{"parm":parm})
+
+
+# Boking Table
+def BookTable(request):
+    print("ok")
+    if(request.method=='POST'):
+        Date = request.POST.get("Date")
+        Time = request.POST.get("Time")
+        Members = request.POST.get("members")
+        date_time = Date + " " + Time
+        date_object = datetime.strptime(date_time,"%Y-%m-%d %H:%M")
+        if(timezone.now()>date_object):
+            messages.info(request,"Invlid Input")
+            HandelBooking(Members)
+            return redirect('BookTable')
+        
+        Boking = Booking(No_Of_Memebers = Members,Time_Date = date_object)
+        Boking.save()
+        messages.info(request,"Successfully Booked")
+    return render(request,'Book_Table.html',{"parm":parm})
+
