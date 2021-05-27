@@ -246,7 +246,14 @@ input[type="submit"] {
     -o-transition: 0.5s all;
     -ms-transition: 0.5s all;
 }
+
+input#timepicker {
+    background: #3f3939;
+}
  
+input#datepicker {
+    background: #3f3939;
+}
 	input[type="submit"]:hover {
     color: #000;
     background:#e6d28d;
@@ -264,7 +271,9 @@ input[type="submit"] {
       }	 
 .copy p a:hover{color:#fff;}
 
+/* Instruction Box */
 
+/* Instruction Box end */
 /*--responsive--*/
 @media(max-width:1920px){
 	h1.header-w3ls {

@@ -1,15 +1,15 @@
 from django import template
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-import json
 import math
+import time
 from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
 from .templatetags.cart import final_amount, discount_calculater,cart_count
 from django.utils import timezone
-from .models import Food,Review, orders, Bill,Booking,Table
+from .models import Food,Review, orders, Bill,Table,Booking
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Min, Avg, Count
 from django.shortcuts import get_object_or_404
@@ -17,10 +17,9 @@ from django.db.models import Q
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
+from pathlib import Path
 
-#Opening json file
-with open("config.json","r") as p:
-    parm = json.load(p)["parm"]
+
 
 # Home page Backand Coding
 def Home(request):
@@ -28,7 +27,7 @@ def Home(request):
  
 # Reset Password functions
 def reset_password(request):
-    return render(request , 'user/Reset_Password.html',{"parm":parm})
+    return render(request , 'user/Reset_Password.html')
 
 #profile page Backand Coding
 @login_required(login_url='/') 
@@ -56,15 +55,13 @@ def Profile(request):
 
         if("profile" in request.FILES):
             img = request.FILES['profile']
-            print(img)
             user.profile_pic = img
             user.save()
-            print("ok1")
         messages.info(request,"Changes Saved Successfully")
         return render(request,'profile_page.html',context)
         
     else:
-       return render(request,'profile_page.html',{"parm":parm})
+       return render(request,'profile_page.html')
 
 # FeedBack
 @login_required(login_url='/') 
@@ -111,7 +108,7 @@ def Register(request):
             messages.info(request,'Password Does Not Match')
             return redirect('/')
     else:
-        return render(request,'Login_Registration.html',{"parm":parm})
+        return render(request,'Login_Registration.html')
 
 
 def Login(request):
@@ -151,7 +148,6 @@ def FoodMenu(request):
         food = Food.objects.all()
     cate = []
     filter = Food.objects.all()
-        
     for i in filter:
         cate.append(i.Food_Type)
     cate= set(cate)
@@ -163,7 +159,7 @@ def FoodMenu(request):
         for i in filter:
             cate.append(i.Food_Type)
         cate= set(cate)
-    return render(request,'Food_menu.html',{'food':food,"cate":cate,"qty":qty,"ord":ord,"parm": parm})
+    return render(request,'Food_menu.html',{'food':food,"cate":cate,"qty":qty,"ord":ord})
 
 # Add To Cart
 @login_required(login_url='Login') 
@@ -198,7 +194,6 @@ def AddCart(request):
     product = Food.objects.filter(id__in = ids)
     user = User.objects.get(id = request.user.id)
     odr = orders.objects.filter(user = user)
-    
     SGST = 5
     CGST  = 5
     penilty = user.penilty
@@ -211,8 +206,6 @@ def AddCart(request):
         Pincode = request.POST.get('pincode')
         payment_method = request.POST.get('paymentmethod')
         if(payment_method=='COD'):
-            print("ok")
-            print(product)
             count = 0
             for p in product:
                 discount_amount = discount_calculater(p,cart)
@@ -230,7 +223,7 @@ def AddCart(request):
             user.save()
             
             return redirect('AddCart')
-    return  render(request,'cart_product.html',{'product':product,"order":odr, "user":user,'TEX':CGST + SGST,"lis":lis,"parm":parm})
+    return  render(request,'cart_product.html',{'product':product,"order":odr, "user":user,'TEX':CGST + SGST,"lis":lis})
 
 #Order Page
 @login_required(login_url='Login') 
@@ -241,10 +234,11 @@ def FoodOrder(request,food_id):
     user = User.objects.get(id = request.user.id)
     ord = orders.objects.filter(user = user)
     ord = list(ord)
-    if(food.Discount_In_Percentage>0):
-        discount = True
-        difference = (food.Food_Price)*((food.Discount_In_Percentage)/(100))
-        new_food_price = int(food.Food_Price - difference)
+    if(food.Discount_In_Percentage):
+        if(food.Discount_In_Percentage>0):
+            discount = True
+            difference = (food.Food_Price)*((food.Discount_In_Percentage)/(100))
+            new_food_price = int(food.Food_Price - difference)
 
     qty = 1
     if(request.method =='POST'):
@@ -262,12 +256,10 @@ def FoodOrder(request,food_id):
     rating = Review.objects.filter(food_id = food_id)
     rate = Review.objects.filter(food_id= food_id).aggregate(Avg('rate'))
     num = Review.objects.filter(food_id= food_id).aggregate(Count('user'))
-    print(rate["rate__avg"])
-    print(num["user__count"])
     food.users = num["user__count"]
     food.Food_Avg_Rating = rate["rate__avg"]
     food.save()
-    return render(request,'Food_Order.html',{"food":food,"rating":rating,"Discount":discount,"new_food_price":new_food_price,"qty":qty,"ord":ord,"parm":parm})
+    return render(request,'Food_Order.html',{"food":food,"rating":rating,"Discount":discount,"new_food_price":new_food_price,"qty":qty,"ord":ord})
 
 
 
@@ -282,11 +274,12 @@ def Payment(request,food_id,qty ):
     SGST = 5
     new_food_price = food.Food_Price
     # Adding Discount
-    if(food.Discount_In_Percentage>0):
-        discount = True
-        difference = (food.Food_Price)*((food.Discount_In_Percentage)/(100))
-        new_food_price = (food.Food_Price - difference)
-    
+    if(food.Discount_In_Percentage):
+        if(food.Discount_In_Percentage>0):
+            discount = True
+            difference = (food.Food_Price)*((food.Discount_In_Percentage)/(100))
+            new_food_price = (food.Food_Price - difference)
+        
     Total_price = round(new_food_price * int(qty),4)
     # Final price
     print(penilty)
@@ -315,7 +308,7 @@ def Payment(request,food_id,qty ):
         elif(payment_method =="UPI" or payment_method =="CARD"):
             messages.info(request,"This service is not avaible now")
 
-    return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price,"user":user,'odr':odr,'CGST':CGST,'SGST':SGST,"parm":parm})
+    return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price,"user":user,'odr':odr,'CGST':CGST,'SGST':SGST})
 
 #MyOrders Page
 @login_required(login_url='Login')
@@ -323,40 +316,30 @@ def MyOrders(request):
     user = User.objects.get(id = request.user.id)
     order = orders.objects.filter(user_id =user).order_by('-date_time')
     bills = Bill.objects.filter(user = user)
-    count = 0
     lis = [request.session.get('cart')]
     if(request.method == 'POST'):
-        count+=1
         if(request.POST.get('cancle')):
-                print("ok")
                 oddr = request.POST.get('order_no')
                 odr = orders.objects.get(id = oddr)
-                print(odr)
-                print(odr.total_amount)
-                if(count<2):
-                    print("first")
-                    user.penilty = math.ceil((odr.total_amount)*0.1)
-                else:
-                    print("second")
+                if(user.penilty>0):
                     user.penilty = user.penilty + math.ceil((odr.total_amount)*0.2)
-                print(user.penilty)
+                else:
+                    user.penilty = math.ceil((odr.total_amount)*0.1)
                 user.save()
                 odr.delete()
                 messages.add_message(request,messages.SUCCESS,'Your Order have cancled successfully!')
 
         else:
-                print("okkk2")
                 oddr = request.POST.get('order_no')
                 odr = orders.objects.get(id = oddr)
                 odr.delete()
                 messages.add_message(request,messages.SUCCESS,'Your Order have cancled successfully!')
-    return render(request,'MyOrders.html',{'user':user,"parm":parm,'orders':order,"bills":bills})
+    return render(request,'MyOrders.html',{'user':user,'orders':order,"bills":bills})
 
 # Sending Conformation email
 def success(request):
     user = User.objects.get(id = request.user.id)
     template = render_to_string('email_templates.html',{'user':user})
-    print("started")
     email  = EmailMessage(
         'Thanks for purhcasing the food',
         template,
@@ -368,30 +351,141 @@ def success(request):
     email.send()
 
 # Handeling Time  and penilties
-def HandelBooking(capicity):
-    Capicity = Table.objects.filter(capicity = capicity)
+many_table_ids = []
+def HandleBooking(capicity,members):
+    members = int(members)
+    Max = 0
+    for i in range(1,capicity+1):
+            table_id = Table.objects.get(id = i)
+            if(Booking.objects.filter(table= table_id).exists()):
+                continue
+            else:
+                print("oh yah lets get start the machine ")
+                if(table_id.capicity==members):
+                    print("capicity == members")
+                    return i
+                elif(members<table_id.capicity):
+                    print("capicity >members")
+                    return i
+                else:
+                    Max = table_id.capicity
+                    print("Max capicity: - ",Max)
+    print("Final Max capicity ",Max)
+    print("Lets get in another loop !!")
+    if(members>Max):
+        print("Oh yah i am in inside")
+        for j in range(1,capicity+1):
+            for i in range(j+1,capicity+1):
+                table_id = Table.objects.get(id = i)
+                table_id_1 = Table.objects.get(id = j)
+                if((Booking.objects.filter(table= table_id).exists() or Booking.objects.filter(table = table_id_1).exists()) and (Booking.objects.filter(table = table_id).Conform ==True or Booking.objects.filter(table= table_id).Conform==True)):
+                    print("continue1 ",i," ",j)
+                    continue
+                else:    
+                    if(members<=table_id.capicity + table_id_1.capicity):
+                        print("capicity <members  and members <capicity1 + capicity2")
+                        many_table_ids.append(i)
+                        print("ok i is in and next j")
+                        many_table_ids.append(j)
+                        return None
+    print("oh no non no")
+    return 0
+                
+            
+@login_required(login_url='Login')        
+def MyBooking(request):
+    user = User.objects.get(id = request.user.id)
+    book = Booking.objects.filter(user =user).order_by('-date_time')
+    if(request.method == 'POST'):
+        if(request.POST.get('cancle')):
+                bok = request.POST.get('booking_no')
+                bk= orders.objects.get(id = bok)
+                if(user.penilty>0):
+                    user.penilty = user.penilty + 50
+                else:
+                    user.penilty = 25
+                user.save()
+                bk.delete()
+                messages.add_message(request,messages.SUCCESS,'Your Booking have cancled successfully!')
+
+        else:
+                bok = request.POST.get('booking_no')
+                bk = Booking.objects.get(id = bok)
+                bk.delete()
+                messages.add_message(request,messages.SUCCESS,'Your Booking have cancled successfully!')
+    return render(request,'MyBooking.html',{'user':user,'bookings':book})
+
+
+
+        
 
 # Contact page
 def Contact(request):
-    return render(request,'index.html',{"parm":parm})
+    return render(request,'index.html')
 
 
 # Boking Table
+@login_required(login_url='Login')
 def BookTable(request):
-    print("ok")
+    lis = list(Table.objects.all())
+    length = len(lis)
+    user = User.objects.get(id = request.user.id)
+    bookings = Booking.objects.filter(user = user)
     if(request.method=='POST'):
         Date = request.POST.get("Date")
         Time = request.POST.get("Time")
         Members = request.POST.get("members")
+        table_id = HandleBooking(length,Members)
         date_time = Date + " " + Time
         date_object = datetime.strptime(date_time,"%Y-%m-%d %H:%M")
-        if(timezone.now()>date_object):
+        current_time = timezone.now()
+        open_time = Date + " " + "11:00"
+        close_time = Date + " " + "18:00"
+        future_time_object_one = datetime.strptime(open_time,"%Y-%m-%d %H:%M")
+        future_time_object_two = datetime.strptime(close_time,"%Y-%m-%d %H:%M")
+        date= current_time +  timezone.timedelta(days=7)
+        print("ok1")
+        if(current_time>date_object):
             messages.info(request,"Invlid Input")
-            HandelBooking(Members)
             return redirect('BookTable')
-        
-        Boking = Booking(No_Of_Memebers = Members,Time_Date = date_object)
+        elif(date_object>date):
+            messages.info(request,"Sorry You can book only 7 days after days")
+            return redirect('BookTable')
+        elif(future_time_object_one>date_object or date_object>future_time_object_two):
+            print("ok2")
+            messages.info(request,"Booking Not available")
+            return redirect('BookTable')
+        if(table_id):
+            table = Table.objects.get(id = table_id)
+            print("inside if")
+        elif(table_id ==0):
+            messages.info(request,"Table is not avaible")
+            return redirect('BookTable')
+        else:
+            for tbl in many_table_ids:
+                table = Table.objects.get(id =tbl)
+                Boking = Booking(user = user,table = table,capicity = Members,date_time = date_object)
+                Boking.save()
+            success_booking(request)
+            many_table_ids.clear()
+            messages.info(request,"Your booking has successfully done \n  For more details you can go my bookings")
+            print("I am in here in else of tbl")
+            return redirect('BookTable')
+        Boking = Booking(user = user,table = table,capicity = Members,date_time = date_object,Booking_time = current_time)
         Boking.save()
-        messages.info(request,"Successfully Booked")
-    return render(request,'Book_Table.html',{"parm":parm})
+        success_booking(request)
+        messages.info(request,"Your booking has successfully done \n  For more details you can go my bookings")
+    return render(request,'Book_Table.html',{"bookings":bookings})
 
+
+def success_booking(request):
+    user = User.objects.get(id = request.user.id)
+    template = render_to_string('email_templates_for_booking.html',{'user':user})
+    email  = EmailMessage(
+        'Thanks for booking table',
+        template,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+    )
+    email.fail_silently = False
+    email.send()

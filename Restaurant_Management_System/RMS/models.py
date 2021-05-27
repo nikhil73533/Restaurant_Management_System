@@ -49,7 +49,7 @@ class MyUserManager(BaseUserManager):
         user.save(using = self._db)
         return user
 
-    def create_superuser(self,email,Name,phone,Address,pincode,city,state,password = None):
+    def create_superuser(self,email,Name,phone,Address,pincode = 302031,city = "Jaipur",state ="Rajasthan",password = None):
         user = self.create_user(
             email = email,
             Name = Name,
@@ -58,7 +58,7 @@ class MyUserManager(BaseUserManager):
             Address  = Address,
             pincode = pincode,
             city = city,
-            state = state
+            state = state,
 
         )
         user.is_admin = True
@@ -138,14 +138,21 @@ class Review(models.Model):
 
 # Book Table 
 class Table(models.Model):
-    capicity = models.IntegerField()
-    def __str__(self):
-        return self.id
+    capicity = models.PositiveIntegerField()
+    Table_pic = models.ImageField(upload_to='Tables/', blank = True, null = True)
 
 
 class Booking(models.Model):
-    No_Of_Memebers = models.IntegerField()
-    Time_Date = models.DateField()
+    user = models.ForeignKey(MyUser,default=None,on_delete = models.CASCADE)
+    table = models.ForeignKey(Table,default=None, on_delete = models.CASCADE)
+    date_time = models.DateTimeField()
+    capicity = models.PositiveIntegerField()
+    Conform = models.BooleanField(null= True,default=False)
+    Booking_time = models.DateTimeField(null= True)
+
+    def __str__(self):
+        return self.user.Name
+
 
     
 

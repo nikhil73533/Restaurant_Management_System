@@ -9,10 +9,11 @@ register = template.Library()
 # For Discount 
 @register.filter(name="is_discount")
 def is_discount(product,cart):
-    print(cart)
-    if(product.Discount_In_Percentage>0):
-        return True
-    return False
+    if(product.Discount_In_Percentage):
+        if(cart):
+            if(product.Discount_In_Percentage>0):
+                return True
+            return False
 
 @register.filter(name = "discount_calculater")
 def discount_calculater(product,cart):
@@ -22,13 +23,14 @@ def discount_calculater(product,cart):
 # Penilty functions
 @register.filter(name="is_penilty")
 def it_penilty(product,cart):
-    product = math.ceil(product)
-    if(product):
-        product = int(product)
-        if(product>0):
-            return True
+    if(cart):
+        product = math.ceil(product)
+        if(product):
+            product = int(product)
+            if(product>0):
+                return True
+            return False
         return False
-    return False
 
 # Cart filters
 
@@ -101,3 +103,21 @@ def is_it_penilty(order):
     if(time<300):
         return False
     return True
+
+
+# For Booking Table
+@register.filter(name="calculate_lenth_of_bookings")
+def calculate_lenth_of_bookings(Bookings):
+    return len(list(Bookings))
+
+@register.filter(name="penilty_calculater")
+def penilty_calculater(booking):
+    current_time = timezone.now()
+    time = current_time - booking.Booking_time
+    time = time.total_seconds()
+    print(time)
+    if(time<3600):
+        return False
+    return True
+
+
