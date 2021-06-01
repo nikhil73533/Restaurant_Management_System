@@ -186,8 +186,8 @@ footer {
           <tbody>
               <tr>
                   <td scope="row">{{order_id.food.Food_Name}}</td>
-                  <td>{{order_id.food.Food_Price}}</td>
-                  <td>&#8377; {{quantity}}</td>
+                  <td><span>&#8377;</span> {{order_id.food.Food_Price}}</td>
+                  <td> {{quantity}}</td>
               {% if order_id.food|is_discount %}
                   <td>{{order_id.discount}}</td>
                   {% endif %} 
@@ -200,7 +200,7 @@ footer {
               <tr>
                   <td scope="row"></td>
                   <td>TOTAL: </td>
-                  <td>&#8377; {{amount}}</td>
+                  <td><span>&#8377;</span> {{amount}}</td>
                   
               </tr>
           </tbody>
