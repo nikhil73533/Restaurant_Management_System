@@ -3,6 +3,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
   <title>Invoice Gusteau's</title>
 <style>
   .clearfix:after {
@@ -186,7 +188,7 @@ footer {
           <tbody>
               <tr>
                   <td scope="row">{{order_id.food.Food_Name}}</td>
-                  <td><span>&#8377;</span> {{order_id.food.Food_Price}}</td>
+                  <td>Rs {{order_id.food.Food_Price}}</td>
                   <td> {{quantity}}</td>
               {% if order_id.food|is_discount %}
                   <td>{{order_id.discount}}</td>
@@ -200,7 +202,7 @@ footer {
               <tr>
                   <td scope="row"></td>
                   <td>TOTAL: </td>
-                  <td><span>&#8377;</span> {{amount}}</td>
+                  <td>Rs {{amount}}</td>
                   
               </tr>
           </tbody>
