@@ -25,11 +25,14 @@
     </div>
     <!-- Header area finish -->
     <!-- Menu area start -->
+    {%if food %}
     {%for food_items in food%}
     <div class="food-items">
-        <img src="/media/{{food_items.food_pic}}"  onClick="document.location='{%url 'FoodOrder' food_items.id  %}'"alt="food_pic">
-        <form action="food_order/{{food_items.id}}/">
-        </form>
+     {%if food_items.food_pic %} 
+            <img src="/media/{{food_items.food_pic}}"  onClick="document.location='{%url 'FoodOrder' food_items.id  %}'"alt="food_pic">
+    {%else%}
+            <img src="../static/Table.jpg" alt="table_pic" onClick="document.location='{%url 'FoodOrder' food_items.id  %}'" class = "profile_pic">
+    {%endif%}
     <div class="details">
         <div class="details-sub">
             <h5>
@@ -41,8 +44,8 @@
                 <input type="submit" id = "submit{{food_items.Food_Name}}" hidden>
             </form>
             </h5>
-             {%if food_items|is_discount:request.session.cart %}
-            <h5 class="price">&#8377; {{food_items|discount_calculater:request.session.cart}}({{food_items.Discount_In_Percentage}}% off)</h5>
+             {%if food_items|is_discount %}
+            <h5 class="price">&#8377; {{food_items|discount_calculater:request.session.cart}} ({{food_items.Discount_In_Percentage}}% off)</h5>
             {%else%}
             <h5 class="price">&#8377; {{food_items.Food_Price}}</h5>
             {%endif%}
@@ -75,7 +78,13 @@
     </div>
     
     </div>
-    {%endfor%}
+    {% endfor %}
+    {% else %}
+     <div class="text-center">
+          <h1>Not Found</h1>
+        </div>
+    {% endif%}
+    
 </div>
 
 <!-- Filter Bar -->
@@ -105,11 +114,10 @@
 <div class="nav">
     <ul>
         <li><a href="/">Home</a></li>
-        <li><a href="#">About</a></li>
+        <li><a href="{%url 'About'%}">About</a></li>
          <li><a href="{%url 'MyOrders'%}">Orders</a><span class = "badge badge-info">{{ord|length}}</span></li>
         <li><a href="{%url 'AddCart'%}">Cart</a><span class = "badge badge-info">{{request.session.cart.keys|length}}</span>
         </li>
-        <li> <a href="{%url 'Contact'%}">Contact</a></li>
     </ul>
 </div>
 <!-- nav area end -->

@@ -1,15 +1,13 @@
 from django import template
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_exempt
 import math
-import time
 from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import auth
 from django.shortcuts import redirect, render
 from .templatetags.cart import final_amount, discount_calculater,cart_count
 from django.utils import timezone
-from .models import Food,Review, orders, Bill,Table,Booking
+from .models import Food,Review, orders, Bill,Table,Booking,ContactUs
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Min, Avg, Count
 from django.shortcuts import get_object_or_404
@@ -120,7 +118,7 @@ def Login(request):
             auth.login(request,user)
             return redirect('/',user= 'user')
         else:
-            messages.info(request,'Login Faild...')
+            messages.info(request,'Login Failed! ')
             return render(request,'Login_Registration.html')
     else:
         return render(request,'Login_Registration.html')
@@ -217,7 +215,7 @@ def AddCart(request):
                 bill.save()
                 count+=1
             success(request)
-            messages.add_message(request,messages.SUCCESS,'Your Order have done successfully!')
+            messages.add_message(request,messages.SUCCESS,'Your have ordered successfully!')
             request.session['cart'] = {}
             user.penilty = 0
             user.save()
@@ -303,10 +301,10 @@ def Payment(request,food_id,qty ):
                 bill.save()
                 user.penilty = 0
                 user.save()
-                messages.add_message(request,messages.SUCCESS,'Your Order have done successfully!')
+                messages.add_message(request,messages.SUCCESS,'Your have ordered successfully!')
                 success(request)
         elif(payment_method =="UPI" or payment_method =="CARD"):
-            messages.info(request,"This service is not avaible now")
+            messages.info(request,"This service is not available now")
 
     return render(request,"Payment.html", {"user":user,"food":food,"Discount":discount,"difference":difference,"new_food_price":new_food_price,"qty":qty,"Total_price":Total_price,"final_price":Final_price,"user":user,'odr':odr,'CGST':CGST,'SGST':SGST})
 
@@ -327,13 +325,13 @@ def MyOrders(request):
                     user.penilty = math.ceil((odr.total_amount)*0.1)
                 user.save()
                 odr.delete()
-                messages.add_message(request,messages.SUCCESS,'Your Order have cancled successfully!')
+                messages.add_message(request,messages.SUCCESS,'Your Order has been canceled successfully!')
 
         else:
                 oddr = request.POST.get('order_no')
                 odr = orders.objects.get(id = oddr)
                 odr.delete()
-                messages.add_message(request,messages.SUCCESS,'Your Order have cancled successfully!')
+                messages.add_message(request,messages.SUCCESS,'Your Order has been canceled successfully!')
     return render(request,'MyOrders.html',{'user':user,'orders':order,"bills":bills})
 
 # Sending Conformation email
@@ -341,7 +339,7 @@ def success(request):
     user = User.objects.get(id = request.user.id)
     template = render_to_string('email_templates.html',{'user':user})
     email  = EmailMessage(
-        'Thanks for purhcasing the food',
+        'Thanks for ordering the food',
         template,
         settings.EMAIL_HOST_USER,
         [user.email],
@@ -357,38 +355,21 @@ def HandleBooking(capicity,members):
     Max = 0
     for i in range(1,capicity+1):
             table_id = Table.objects.get(id = i)
-            if(Booking.objects.filter(table= table_id).exists()):
-                continue
+            if(table_id.capicity==members):
+                return i
+            elif(members<table_id.capicity):
+                return i
             else:
-                print("oh yah lets get start the machine ")
-                if(table_id.capicity==members):
-                    print("capicity == members")
-                    return i
-                elif(members<table_id.capicity):
-                    print("capicity >members")
-                    return i
-                else:
-                    Max = table_id.capicity
-                    print("Max capicity: - ",Max)
-    print("Final Max capicity ",Max)
-    print("Lets get in another loop !!")
+                Max = table_id.capicity
     if(members>Max):
-        print("Oh yah i am in inside")
         for j in range(1,capicity+1):
             for i in range(j+1,capicity+1):
                 table_id = Table.objects.get(id = i)
-                table_id_1 = Table.objects.get(id = j)
-                if((Booking.objects.filter(table= table_id).exists() or Booking.objects.filter(table = table_id_1).exists()) and (Booking.objects.filter(table = table_id).Conform ==True or Booking.objects.filter(table= table_id).Conform==True)):
-                    print("continue1 ",i," ",j)
-                    continue
-                else:    
-                    if(members<=table_id.capicity + table_id_1.capicity):
-                        print("capicity <members  and members <capicity1 + capicity2")
+                table_id_1 = Table.objects.get(id = j)   
+                if(members<=table_id.capicity + table_id_1.capicity):
                         many_table_ids.append(i)
-                        print("ok i is in and next j")
                         many_table_ids.append(j)
                         return None
-    print("oh no non no")
     return 0
                 
             
@@ -396,33 +377,33 @@ def HandleBooking(capicity,members):
 def MyBooking(request):
     user = User.objects.get(id = request.user.id)
     book = Booking.objects.filter(user =user).order_by('-date_time')
+    print(book)
     if(request.method == 'POST'):
-        if(request.POST.get('cancle')):
-                bok = request.POST.get('booking_no')
-                bk= orders.objects.get(id = bok)
-                if(user.penilty>0):
-                    user.penilty = user.penilty + 50
-                else:
-                    user.penilty = 25
-                user.save()
-                bk.delete()
-                messages.add_message(request,messages.SUCCESS,'Your Booking have cancled successfully!')
-
-        else:
                 bok = request.POST.get('booking_no')
                 bk = Booking.objects.get(id = bok)
                 bk.delete()
-                messages.add_message(request,messages.SUCCESS,'Your Booking have cancled successfully!')
+                messages.add_message(request,messages.SUCCESS,'Your Booking has been canceled successfully!')
     return render(request,'MyBooking.html',{'user':user,'bookings':book})
-
-
-
-        
+   
 
 # Contact page
 def Contact(request):
-    return render(request,'index.html')
+    user = User.objects.get(id = request.user.id)
+    if(request.method == 'POST'):
+        name = request.POST.get('Name')
+        email = request.POST.get('Email')
+        Message = request.POST.get('Message')
+        print(email)
+        print(name)
+        ct = ContactUs(Name = name, Email = email, message = Message)
+        ct.save()
+        messages.info(request,'We will be in touch with you soon')
+    return render(request,'Contact.html',{'user':user})
 
+
+
+def About(request):
+    return render(request,'About.html')
 
 # Boking Table
 @login_required(login_url='Login')
@@ -444,37 +425,34 @@ def BookTable(request):
         future_time_object_one = datetime.strptime(open_time,"%Y-%m-%d %H:%M")
         future_time_object_two = datetime.strptime(close_time,"%Y-%m-%d %H:%M")
         date= current_time +  timezone.timedelta(days=7)
-        print("ok1")
         if(current_time>date_object):
             messages.info(request,"Invlid Input")
             return redirect('BookTable')
         elif(date_object>date):
-            messages.info(request,"Sorry You can book only 7 days after days")
+            messages.info(request,"Sorry! you book for only 7 days in advance.")
             return redirect('BookTable')
         elif(future_time_object_one>date_object or date_object>future_time_object_two):
-            print("ok2")
             messages.info(request,"Booking Not available")
             return redirect('BookTable')
         if(table_id):
             table = Table.objects.get(id = table_id)
-            print("inside if")
-        elif(table_id ==0):
-            messages.info(request,"Table is not avaible")
+        elif(table_id == 0):
+            messages.info(request,"Table is not available")
             return redirect('BookTable')
         else:
             for tbl in many_table_ids:
                 table = Table.objects.get(id =tbl)
-                Boking = Booking(user = user,table = table,capicity = Members,date_time = date_object)
+                Boking = Booking(user = user,table = table,capicity = Members,date_time = date_object,Booking_time = current_time)
                 Boking.save()
             success_booking(request)
             many_table_ids.clear()
-            messages.info(request,"Your booking has successfully done \n  For more details you can go my bookings")
+            messages.info(request,"Your booking was successful \n  For more details you can go to My Bookings")
             print("I am in here in else of tbl")
             return redirect('BookTable')
         Boking = Booking(user = user,table = table,capicity = Members,date_time = date_object,Booking_time = current_time)
         Boking.save()
         success_booking(request)
-        messages.info(request,"Your booking has successfully done \n  For more details you can go my bookings")
+        messages.info(request,"Your booking was successful  \n  For more details you can go to My Bookings")
     return render(request,'Book_Table.html',{"bookings":bookings})
 
 
@@ -482,7 +460,7 @@ def success_booking(request):
     user = User.objects.get(id = request.user.id)
     template = render_to_string('email_templates_for_booking.html',{'user':user})
     email  = EmailMessage(
-        'Thanks for booking table',
+        'Thanks for booking the table',
         template,
         settings.EMAIL_HOST_USER,
         [user.email],

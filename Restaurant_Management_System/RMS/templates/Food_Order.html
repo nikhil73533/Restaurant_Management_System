@@ -28,10 +28,18 @@
           <div class = "product-imgs">
             <div class = "img-display">
               <div class = "img-showcase">
+               {%if food.food_pic %} 
+                 <img src = "/media/{{food.food_pic}}" alt = "Food image">
                 <img src = "/media/{{food.food_pic}}" alt = "Food image">
                 <img src = "/media/{{food.food_pic}}" alt = "Food image">
                 <img src = "/media/{{food.food_pic}}" alt = "Food image">
-                <img src = "/media/{{food.food_pic}}" alt = "Food image">
+    {%else%}
+            <img src="../static/download.png" alt="food_pic" class = "profile_pic">
+    {%endif%}
+    
+             
+              
+                
               </div>
             </div>
             <div class = "img-select">
@@ -177,7 +185,12 @@
               <div class="profile">
                   <!--img---->
                   <div class="profile-img">
-                      <img src="/media/{{comment.user.profile_pic}}" />
+                   {%if comment.user.profile_pic %} 
+             <img src="/media/{{comment.user.profile_pic}}" />
+            {%else%}
+            <img src="../css/user.png" alt="user_profile_pic"  class = "profile_pic">
+            {%endif%}
+                     
                   </div>
                   <!--name-and-username-->
                   <div class="name-user">

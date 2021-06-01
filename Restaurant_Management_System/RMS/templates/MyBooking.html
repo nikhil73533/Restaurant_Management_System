@@ -20,18 +20,14 @@
   <!-- Latest compiled JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{%static '/css/MyOrders.css' %}">
+  <link rel="stylesheet" href="{%static '/css/MyBooking.css' %}">
   <title>Shoping Cart</title>
 </head>
 
-<body>
-
-  <!-- Header area -->
-  <div class="menu">
 
     <div class="heading">
       <h1>KAILASH DA DHABA</h1>
-      <h3>&mdash; MY BOOKINGS &mdash;</h3>
+      <h3>&mdash; MY BOOKINGS  &mdash;</h3>
 
     </div>
   </div>
@@ -50,24 +46,34 @@
   </div>
   <!-- nav area end -->
 
-  <div class="container">
-    <div class="border rounded p-4 m-4">
-      <div class="display-4">MY Bookings</div>
-      <table class="table">
-
-        <thead>
-          <tr>
+ <!---Hero Section-->
+ <section id="hero">
+    <div class="hero-container">
+    <div class="hero-logo">
+      <h1 class="font-weight-bold">My Bookings</h1>
+  </div>
+        </div>
+</section>
+<!---End of Hero Section-->
+<!--Cart Section-->
+<section class="mt-5">
+    <div class="container">
+        <div class="cart">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
             <th scope="col">Sno</th>
             <th scope="col">Table</th>
              <th scope="col">Table Number</th>
             <th scope="col">Table Capicity</th>
             <th scope="col">Members</th>
             <th scope="col">Date and Time</th>
-            <th scope="col">Booking Conform</th>
-            <th scope="col">Cancle Booking</th>
+            <th scope="col">Booking Confirm</th>
+            <th scope="col">Cancel Booking</th>
           </tr>
-        </thead>
-        <tbody>
+                </thead>
+               <tbody>
         {% if bookings %}
         {% for booking in bookings %}
           <tr>
@@ -86,55 +92,19 @@
             <td>; {{booking.date_time}}</td>
             <td>
               {%if booking.Conform %}
-                <small class="badge badge-success">Conform</small>
+                <small class="badge badge-success">Confirm</small>
               {% else %}
-              <small class="badge badge-warning">Not Conform</small>
+              <small class="badge badge-warning">Not Confirm</small>
               {% endif %}
               </td>
             <td>
-              
-
-            {%if not order.deliver_status %}
-              {% if booking|penilty_calculater %}
-                  <button type="button" data-target="#mymodel_1" data-toggle="modal" class="btn btn-primary">Cancle</button>
-                {% else %}
+            {%if not booking.Conform %}
                 <form action="{{request.path}}" method="POST">{% csrf_token %}
                 <input type="text" value={{booking.id}} name="booking_no" hidden>
                 <button type="submit"   name="Cancle_with_no_penilty" value="Cancle_with_no_penilty"
-                  class="btn btn-primary">Cancle</button>
+                  class="btn btn-primary">Cancel</button>
                 </form> 
-              {% endif %}
             {% endif %}
-              
-               
-               
-             
-
-              <!-- for cancle button -->
-
-              <div class="modal" id="mymodel_1">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h3 class="text-center text-danger ">Warning</h3>
-
-                    </div>
-                    <div class="modal-body">
-                      <p>This is warning about that you are cancel your booking after  <strong>one hour</strong> you have to pay panilty of <strong> 25</strong>
-                        for this order when you order next time
-                      </p>
-                    </div>
-                    <div class="modal-footer">
-                      <form action="{{request.path}}" method='POST'>{% csrf_token %}
-                        <input type="text" value={{order.id}} name="order_no" hidden>
-                        <button type="submit" class="btn btn-success text-center" name="cancle" value="Cancle">I aggree</button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- cancle area end -->
-
             </td>
           </tr>
           {% endfor %}
@@ -144,17 +114,16 @@
           <h1>No Bookings</h1>
         </div>
         {% endif %}
-      </table>
-
+            </table>
+        </div>
+        </div>
     </div>
-  </div>
-  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <script>
+</section>
+</div>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
 {% for msg in messages %}
   swal("Thank You!", '{{msg}}', "success");
 {%endfor%}
-  </script>
-  
-</body>
 
-</html>
+</script>

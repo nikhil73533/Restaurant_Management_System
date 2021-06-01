@@ -153,7 +153,11 @@ class Booking(models.Model):
     def __str__(self):
         return self.user.Name
 
-
-    
+class ContactUs(models.Model):
+    Name = models.CharField(max_length=5000, null= True)
+    Email = models.CharField(max_length=6000,null  = True)
+    message = models.CharField(max_length = 7000)
+    def __str__(self):
+        return self.Name
 
     
