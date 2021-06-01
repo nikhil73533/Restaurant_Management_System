@@ -78,11 +78,12 @@ def Profile(request):
 @login_required(login_url='/') 
 def FeedBack(request,food_id):
     user = User.objects.get(id = request.user.id)
+    time = timezone.now()
     food = Food.objects.get(id = food_id)
     if(request.method =='POST'):
         comment = request.POST['feedback']
         rating=  request.POST['rating']
-        user_feedback = Review(user = user,food = food, content = comment, rate = rating)
+        user_feedback = Review(user = user,food = food, content = comment, rate = rating,date_time = time)
         user_feedback.save()
         return redirect('FoodOrder',food_id = food_id)
     else:
@@ -263,8 +264,7 @@ def FoodOrder(request,food_id):
                 qty = value + 1
         else:
             qty = 1
-
-    rating = Review.objects.filter(food_id = food_id)
+    rating = Review.objects.filter(food_id = food_id).order_by('-date_time')
     rate = Review.objects.filter(food_id= food_id).aggregate(Avg('rate'))
     num = Review.objects.filter(food_id= food_id).aggregate(Count('user'))
     food.users = num["user__count"]
